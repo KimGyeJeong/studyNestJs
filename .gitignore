@@ -2,3 +2,8 @@
 
 section3/package-lock.json
 section3/node_modules/
+/studyNest/cf_sns/node_modules/
+/studyNest/cf_sns/.prettierrc
+/studyNest/cf_sns/eslint.config.mjs
+/studyNest/cf_sns/package-lock.json
+/studyNest/cf_sns/dist/
