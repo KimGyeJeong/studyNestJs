@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 
 interface Post{
@@ -13,7 +13,7 @@ interface Post{
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
+  @Get('post')
   getPost(): Post {
     return {
       author : "글쓴이",
