@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PostsModule } from './posts/posts.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { PostsModel } from './posts/entities/posts.entity';
 
 @Module({
   imports: [PostsModule, TypeOrmModule.forRoot({
@@ -12,7 +13,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     username: 'postgres',
     password: 'postgres',
     database: 'postgres',
-    entities: [], // db 연결될 모델들
+    entities: [
+      PostsModel,
+    ], // db 연결될 모델들
     synchronize: true,  // nestjs와 db의 데이터구조 sync맞쳐줌. 개발환경에서는 true가 좋지만 실제환경에서는 false로 해주어야함. 무슨타입이 올지 모르기때문.
     
   })],
