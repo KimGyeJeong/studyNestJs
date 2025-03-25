@@ -44,23 +44,23 @@ let posts: PostModel[] = [
 export class PostsService {
   constructor(
     @InjectRepository(PostsModel)
-    private readonly  postsRepository : Repository<PostsModel>) {
+    private readonly postsRepository: Repository<PostsModel>) {
   }
-  
-  async getAllPosts(){
+
+  async getAllPosts() {
     return await this.postsRepository.find();
   }
-  
-  getPostById(id: number){
-    const post = posts.find((post) => post.id === +id);
 
+  async getPostById(id: number) {
+    const post = await this.postsRepository.findOne({ where: { id }, });
+    
     if (!post) {
       throw new NotFoundException();
     }
     return post;
   }
-  
-  createPost(author:string, title:string, content: string){
+
+  createPost(author: string, title: string, content: string) {
     const post: PostModel = {
       id: posts[posts.length - 1].id + 1,
       author,
@@ -75,7 +75,7 @@ export class PostsService {
     return post;
   }
 
-  updatePost(id: number, author: string | undefined, title: string | undefined, content: string | undefined){
+  updatePost(id: number, author: string | undefined, title: string | undefined, content: string | undefined) {
     const post = posts.find((post) => post.id === id);
 
     if (!post) {
@@ -96,8 +96,8 @@ export class PostsService {
 
     return post;
   }
-  
-  deletePost(id: number){
+
+  deletePost(id: number) {
     const post = posts.find((post) => post.id === id);
 
     if (!post) {
