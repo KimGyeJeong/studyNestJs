@@ -47,8 +47,8 @@ export class PostsService {
     private readonly  postsRepository : Repository<PostsModel>) {
   }
   
-  getAllPosts(){
-    return posts;
+  async getAllPosts(){
+    return await this.postsRepository.find();
   }
   
   getPostById(id: number){
