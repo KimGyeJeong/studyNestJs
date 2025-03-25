@@ -52,27 +52,23 @@ export class PostsService {
   }
 
   async getPostById(id: number) {
-    const post = await this.postsRepository.findOne({ where: { id }, });
-    
+    const post = await this.postsRepository.findOne({ where: { id } });
+
     if (!post) {
       throw new NotFoundException();
     }
     return post;
   }
 
-  createPost(author: string, title: string, content: string) {
-    const post: PostModel = {
-      id: posts[posts.length - 1].id + 1,
-      author,
-      title,
-      content,
-      likeCount: 0,
-      commentCount: 0,
-    };
+  async createPost(author: string, title: string, content: string) {
+    // create --> db에 맞는 객체 생성
+    // save --> db에 create로 생성한 객체 저장
 
-    // posts.push(post);
-    posts = [...posts, post];
-    return post;
+    const post = this.postsRepository.create({
+      author, title, content, likeCount: 0, commentCount: 0,
+    });
+
+    return await this.postsRepository.save(post);
   }
 
   updatePost(id: number, author: string | undefined, title: string | undefined, content: string | undefined) {
