@@ -71,8 +71,12 @@ export class PostsService {
     return await this.postsRepository.save(post);
   }
 
-  updatePost(id: number, author: string | undefined, title: string | undefined, content: string | undefined) {
-    const post = posts.find((post) => post.id === id);
+  async updatePost(id: number, author: string | undefined, title: string | undefined, content: string | undefined) {
+    // save 의 기능
+    // 1. 만약에 데이터가 존재하지 않는다면 (id기준으로) 새로 생성함.
+    // 2. 만약에 데이터가 존재한다면 (같은 id의 값이 존재한다면) 존재하던 값을 업데이트 한다.
+    
+    const post = await this.postsRepository.findOne({where: { id }});
 
     if (!post) {
       throw new NotFoundException();
@@ -88,9 +92,8 @@ export class PostsService {
       post.content = content;
     }
 
-    posts = posts.map(prevPost => prevPost.id === id ? post : prevPost);
-
-    return post;
+    // update
+    return await this.postsRepository.save(post);
   }
 
   deletePost(id: number) {
