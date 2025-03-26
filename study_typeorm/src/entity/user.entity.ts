@@ -27,7 +27,32 @@ export class UserModel {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({
+        // db가 인지하는 칼럼 타입
+        // 자동으로 매치 시켜줌
+        // varchar는 길이 지정 가능하나 text는 불가능함
+        // type: 'text',
+        type: 'varchar',
+        // db 칼럼 이름
+        // 프로퍼티 이름으로 자동 유추됨
+        name : 'title',
+        // 값의 길이
+        // 입력할 수 있는 글자의 길이
+        length : 300,
+        // null 이 가능한지
+        nullable: true,
+        // update가 true 면 처음 저장할때만 값 지정 가능, 이후에는 값 변경 불가능
+        update : false,
+        // select find()를 실행할 때 기본으로 값을 부러올지
+        // 기본값이 true
+        select : false,
+        // 기본 으로 입력되게 되는 값.
+        // 아무것도 입력되지 않았을때 저장되는 값.
+        default : 'default value',
+        // 칼럼 중에서 유일무이한 값이 되어야 하는지. 기본값 false
+        unique : false,
+        
+    })
     title: string;
 
     // 데이터가 생성되는 날짜와 시간
@@ -48,7 +73,7 @@ export class UserModel {
     @Generated('increment') // 1씩 올라가는 값
         // @Generated('uuid') // 새로 생기는 값 이때 string 형식으로 사용 
     additionalId: number;
-    
+
     //additionalId 와 PrimaryGeneratedColumn 차이점은?
     // 기본키와 보조키로 사용하는점이 다름
 }
