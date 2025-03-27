@@ -15,7 +15,6 @@ export class AppController {
     postUser() {
         return this.userRepository.save({
             title: 'test Title',
-            role: Role.USER,
         });
     }
 
