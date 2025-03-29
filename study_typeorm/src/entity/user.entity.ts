@@ -95,7 +95,8 @@ export class UserModel {
         // find() 샐힝할때마다 항상 같이 가져올 relation
         // true : ***Repository.find({relations: profile:true}) 처럼 사용하지 않고 .find({}) 으로 자동으로 만들어줌
         // 기본값. eager:false
-        eager : true,
+        // eager : true,
+        eager : false,
         
         // true : 저장할때 relation을 한번에 같이 저장 가능
         // 기본값. cascade: false
