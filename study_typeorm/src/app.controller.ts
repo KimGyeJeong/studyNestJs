@@ -33,9 +33,9 @@ export class AppController {
 
     @Post('users')
     async postUser() {
-        for (let i=0; i<100; i++){
+        for (let i = 0; i < 100; i++) {
             await this.userRepository.save({
-                email : `user-${i}.google.com`,
+                email: `user-${i}.google.com`,
             })
         }
     }
@@ -99,62 +99,62 @@ export class AppController {
             // where : [
             //     { id : 1},{version : 1}
             // ]
-            
+
             // WHERE 유틸리티
-            where : {
+            where: {
                 // id가 1이 아닌 경우
                 // id : Not(1),
-                
+
                 // 작은경우
                 // id : LessThan(10),
-                
+
                 // 작거나 같은경우
                 // id : LessThanOrEqual(10),
-                
+
                 // 큰 경우
                 // id : MoreThan(10),
-                
+
                 // 작거나 큰경우
                 // id : MoreThanOrEqual(10),
-                
+
                 // 같은 경우
                 // id : Equal(10),
-                
+
                 // 유사값
                 // email : Like('google'), // 아무것도 안나옴.
                 // email : Like('%google%'),
-                
+
                 // 대문자 소문자 구분없는 유사값
                 // email : ILike('%GOOGLE%'),
-                
+
                 // 사이값
                 // id : Between(10, 15),
-                
+
                 // 해당되는 여러개의 값
                 // id : In([1,2,3,4,31]),
-                
+
                 // null인 경우
                 // id : IsNull(),
-                
+
                 //isnull은 typeorm이 지원하나 isnotnull은 지원하지 않음. 이런경우 QueryBuilder 를 사용해야 함.
             }
-            
+
             // 관계를 가져오는 법
             // relations : {
             //     profile : true
             // },
-            
+
             // 순서
             // ASC : 오름차
             // DESC : 내림차
             // order : {
             //     id : 'ASC',
             // },
-            
+
             // 처음 몇개를 제외할지
             // 기본값 0
             // skip : 2,
-            
+
             // 몇개를 가져올지
             // 기본값. table의 전체. take : 0 과 동일
             // take : 1,
@@ -265,5 +265,140 @@ export class AppController {
     async deleteProfile(@Param('id') id: string) {
         await this.profileRepository.delete(+id);
 
+    }
+
+    @Post('sample')
+    async sample() {
+        // 모델에 해당되는 객체 생성. - 저장은 안하고 객체만 만듬
+        // const user1 = this.userRepository.create({
+        //     email : 'test@gmail.com',
+        // });
+        // //아래의 형태로 만들어지는 형식
+        // // new UserModel({
+        // //     email: 'test@gmail.com',
+        // // })
+
+        // 객체 생성, 저장
+        // const user2 = await this.userRepository.save({
+        //     email : 'test@gmail.com',
+        // })
+
+        // preload
+        // 입력된 값을 기반으로 데이터베이스에 있는 데이터를 불러오고
+        // 추가 입력된 값으로 데이터베이스에서 가져온 값들을 대체함
+        // 저장하지는 않음
+        // const user3 = await this.userRepository.preload({
+        //     id: 101,
+        //     email : 'test33@gmail.com',
+        // });
+
+        // delete
+        // 삭제하기
+        // await this.userRepository.delete(101);
+
+        // increment
+        // 값을 증가
+        // filter : 조건
+        // 'count'  : 어떤 컬럼을
+        // 2 : 2만큼 증가
+        // await this.userRepository.increment({
+        //     //filter
+        //     id: 1,
+        // }, 'count', 2)
+
+        // decrement
+        // 값을 감소
+        // await this.userRepository.decrement({id: 1}, 'count', 1);
+
+        // count
+        // 갯수 카운팅하기
+        // const count = await this.userRepository.count({
+        //     where : {
+        //         email : ILike('%0%'),
+        //     }
+        // });
+        
+        // sum
+        //조건에 해당하는 값들을 더함
+        // const sum = await this.userRepository.sum('count', {
+        //     email : ILike('%0%'),
+        // })
+        
+        // average
+        // 평균
+        // const average = await this.userRepository.average('count', {
+        //     id : LessThan(10),
+        // })
+        
+        // minimum
+        // 최솟값
+        // const min = await this.userRepository.minimum('count', {
+        //     id : LessThan(10),
+        // })
+        
+        // maximum
+        // 최댓값
+        // const max = await this.userRepository.maximum('count', {
+        //     id : LessThan(10),
+        // })
+        
+        // find
+        // const user = await this.userRepository.find({
+        //    
+        // });
+        
+        // findOne
+        // const userOne = await this.userRepository.findOne({
+        //     where : {
+        //         id : 3,
+        //     }
+        // })
+        
+        // findAndCount
+        // find 와 전체개수 가져오기
+        // 페이징처리할때 주로 사용함
+        const userAndCount = await this.userRepository.findAndCount({
+            take : 3,
+        });
+        
+        /*
+        [
+  [
+    {
+      "id": 1,
+      "email": "user-0.google.com",
+      "createdAt": "2025-03-28T18:07:09.915Z",
+      "updatedAt": "2025-03-28T18:07:09.915Z",
+      "version": 1,
+      "additionalId": 1,
+      "role": "user",
+      "count": 0
+    },
+    {
+      "id": 2,
+      "email": "user-1.google.com",
+      "createdAt": "2025-03-28T18:07:09.931Z",
+      "updatedAt": "2025-03-28T18:07:09.931Z",
+      "version": 1,
+      "additionalId": 2,
+      "role": "user",
+      "count": 0
+    },
+    {
+      "id": 3,
+      "email": "user-2.google.com",
+      "createdAt": "2025-03-28T18:07:09.934Z",
+      "updatedAt": "2025-03-28T18:07:09.934Z",
+      "version": 1,
+      "additionalId": 3,
+      "role": "user",
+      "count": 0
+    }
+  ],
+  100
+]
+         */
+        
+        return userAndCount;
     }
 }

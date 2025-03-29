@@ -61,9 +61,9 @@ export class UserModel {
     //
     // })
     // title: string;
-    
+
     @Column()
-    email:string;
+    email: string;
 
     // 데이터가 생성되는 날짜와 시간
     @CreateDateColumn()
@@ -90,23 +90,23 @@ export class UserModel {
         default: Role.USER,
     })
     role: Role;
-    
+
     @OneToOne(() => ProfileModel, (profile) => profile.user, {
         // find() 샐힝할때마다 항상 같이 가져올 relation
         // true : ***Repository.find({relations: profile:true}) 처럼 사용하지 않고 .find({}) 으로 자동으로 만들어줌
         // 기본값. eager:false
         // eager : true,
-        eager : false,
-        
+        eager: false,
+
         // true : 저장할때 relation을 한번에 같이 저장 가능
         // 기본값. cascade: false
         cascade: true,
-        
+
         // 기본값. true
         // null을 넣어도 가능한지.
         // cascade 와 같이쓰는걸추천
         nullable: true,
-        
+
         // ~했을때. 
         // 삭제했을때. 관계가 삭제되었을때.
         // no action : 아무것도 안함
@@ -120,11 +120,16 @@ export class UserModel {
         onDelete: 'CASCADE',
     })
     @JoinColumn()
-    profile : ProfileModel;
-    
-    @OneToMany(()=> PostModel,(post) => post.author)
-    posts : PostModel[];
-    
+    profile: ProfileModel;
+
+    @OneToMany(() => PostModel, (post) => post.author)
+    posts: PostModel[];
+
+    @Column({
+        default: 0
+    })
+    count: number;
+
     //additionalId 와 PrimaryGeneratedColumn 차이점은?
     // 기본키와 보조키로 사용하는점이 다름
 }
