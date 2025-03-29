@@ -2,12 +2,13 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    Generated, OneToOne,
+    Generated, OneToMany, OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
     VersionColumn
 } from 'typeorm';
 import {ProfileModel} from "./profile.entity";
+import {PostModel} from "./post.entity";
 
 export enum Role {
     USER = 'user',
@@ -92,7 +93,10 @@ export class UserModel {
     
     @OneToOne(() => ProfileModel, (profile) => profile.user)
     profile : ProfileModel;
-
+    
+    @OneToMany(()=> PostModel,(post) => post.author)
+    posts : PostModel[];
+    
     //additionalId 와 PrimaryGeneratedColumn 차이점은?
     // 기본키와 보조키로 사용하는점이 다름
 }
