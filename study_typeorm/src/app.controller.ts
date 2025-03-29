@@ -1,7 +1,18 @@
 import {Controller, Delete, Get, Param, Patch, Post} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {Role, UserModel} from "./entity/user.entity";
-import {Repository} from "typeorm";
+import {
+    Between,
+    Equal,
+    ILike, In, IsNull,
+    LessThan,
+    LessThanOrEqual,
+    Like,
+    MoreThan,
+    MoreThanOrEqual,
+    Not,
+    Repository
+} from "typeorm";
 import {ProfileModel} from "./entity/profile.entity";
 import {PostModel} from "./entity/post.entity";
 import {TagModel} from "./entity/tag.entity";
@@ -21,10 +32,12 @@ export class AppController {
     }
 
     @Post('users')
-    postUser() {
-        return this.userRepository.save({
-            // title: 'test Title',
-        });
+    async postUser() {
+        for (let i=0; i<100; i++){
+            await this.userRepository.save({
+                email : `user-${i}.google.com`,
+            })
+        }
     }
 
     @Get('users')
@@ -40,15 +53,15 @@ export class AppController {
             // select. 어떤 프로퍼티를 선택해서 가져올지.
             // select를 정의하지 않으면 기본으로 모든 프로퍼티를 가져온다.
             // 기본값. select : {}
-            select: {
-                id: true,
-                createdAt: true,
-                updatedAt: true,
-                //relations 추가한 이후
-                profile : {
-                    id : true,
-                }
-            },
+            // select: {
+            //     id: true,
+            //     createdAt: true,
+            //     updatedAt: true,
+            //     //relations 추가한 이후
+            //     profile : {
+            //         id : true,
+            //     }
+            // },
             /*
             [
   {
@@ -65,14 +78,14 @@ export class AppController {
 
             // where. 필터링할 조건을 입력하게 된다.
             // and 형식으로 사용할 경우
-            where: {
-                id: 1,
-                version : 1,
-                //relations 추가한 이후
-                profile: {
-                    id : 1
-                }
-            },
+            // where: {
+            //     id: 1,
+            //     version : 1,
+            //     //relations 추가한 이후
+            //     profile: {
+            //         id : 1
+            //     }
+            // },
             /*
             [
   {
@@ -87,25 +100,64 @@ export class AppController {
             //     { id : 1},{version : 1}
             // ]
             
+            // WHERE 유틸리티
+            where : {
+                // id가 1이 아닌 경우
+                // id : Not(1),
+                
+                // 작은경우
+                // id : LessThan(10),
+                
+                // 작거나 같은경우
+                // id : LessThanOrEqual(10),
+                
+                // 큰 경우
+                // id : MoreThan(10),
+                
+                // 작거나 큰경우
+                // id : MoreThanOrEqual(10),
+                
+                // 같은 경우
+                // id : Equal(10),
+                
+                // 유사값
+                // email : Like('google'), // 아무것도 안나옴.
+                // email : Like('%google%'),
+                
+                // 대문자 소문자 구분없는 유사값
+                // email : ILike('%GOOGLE%'),
+                
+                // 사이값
+                // id : Between(10, 15),
+                
+                // 해당되는 여러개의 값
+                // id : In([1,2,3,4,31]),
+                
+                // null인 경우
+                // id : IsNull(),
+                
+                //isnull은 typeorm이 지원하나 isnotnull은 지원하지 않음. 이런경우 QueryBuilder 를 사용해야 함.
+            }
+            
             // 관계를 가져오는 법
-            relations : {
-                profile : true
-            },
+            // relations : {
+            //     profile : true
+            // },
             
             // 순서
             // ASC : 오름차
             // DESC : 내림차
-            order : {
-                id : 'ASC',
-            },
+            // order : {
+            //     id : 'ASC',
+            // },
             
             // 처음 몇개를 제외할지
             // 기본값 0
-            skip : 2,
+            // skip : 2,
             
             // 몇개를 가져올지
             // 기본값. table의 전체. take : 0 과 동일
-            take : 1,
+            // take : 1,
         });
     }
 
