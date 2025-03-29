@@ -2,7 +2,7 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    Generated, OneToMany, OneToOne,
+    Generated, JoinColumn, OneToMany, OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
     VersionColumn
@@ -91,7 +91,34 @@ export class UserModel {
     })
     role: Role;
     
-    @OneToOne(() => ProfileModel, (profile) => profile.user)
+    @OneToOne(() => ProfileModel, (profile) => profile.user, {
+        // find() 샐힝할때마다 항상 같이 가져올 relation
+        // true : ***Repository.find({relations: profile:true}) 처럼 사용하지 않고 .find({}) 으로 자동으로 만들어줌
+        // 기본값. eager:false
+        eager : true,
+        
+        // true : 저장할때 relation을 한번에 같이 저장 가능
+        // 기본값. cascade: false
+        cascade: true,
+        
+        // 기본값. true
+        // null을 넣어도 가능한지.
+        // cascade 와 같이쓰는걸추천
+        nullable: true,
+        
+        // ~했을때. 
+        // 삭제했을때. 관계가 삭제되었을때.
+        // no action : 아무것도 안함
+        // cascade : 참조하는 Row도 같이 삭제
+        // set null : 참조하는 Row에서 참조 id를 null로 변경
+        // set default : 기본 세팅으로 설정(테이블의 기본 세팅)
+        // restrict : 참조하고 있는 Row가 있는 경우 참조당하는 Row 삭제 불가
+        // 추가.
+        //@JoinColumn() 이 profile.entity쪽에 걸려있으면
+        // profile이 삭제되어도 user는 삭제되지 않음.
+        onDelete: 'CASCADE',
+    })
+    @JoinColumn()
     profile : ProfileModel;
     
     @OneToMany(()=> PostModel,(post) => post.author)

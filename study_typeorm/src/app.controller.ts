@@ -1,4 +1,4 @@
-import {Controller, Get, Param, Patch, Post} from '@nestjs/common';
+import {Controller, Delete, Get, Param, Patch, Post} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {Role, UserModel} from "./entity/user.entity";
 import {Repository} from "typeorm";
@@ -33,10 +33,11 @@ export class AppController {
     @Get('users')
     getUsers() {
         return this.userRepository.find({
-            relations : {
-                profile: true,
-                posts: true,
-            }
+            // OneToOne 에 옵션으로 eager:true를 넣어주면 아래의 relations 는 자동으로 생성됨.
+            // relations : {
+            //     profile: true,
+            //     posts: true,
+            // }
         });
     }
 
@@ -54,14 +55,23 @@ export class AppController {
     
     @Post('user/profile')
     async createUserAndProfile(){
+        // const user = await this.userRepository.save({
+        //     email : 'user@gmail.com',
+        // });
+        //
+        // const profile = await this.profileRepository.save({
+        //     profileImg : 'img.png',
+        //     user,
+        // });
+        
+        //OneToOne에 옵션으로 cascade:true 으로 지정시에 아래처럼 한꺼번에 저장가능.
+        // 기본값 false 이기 때문에 위의 코드 const user, const profile으로 실행해야함.
         const user = await this.userRepository.save({
             email : 'user@gmail.com',
-        });
-        
-        const profile = await this.profileRepository.save({
-            profileImg : 'img.png',
-            user,
-        });
+            profile: {
+                profileImg : 'img.png'
+            }
+        })
         
         return user;
     }
@@ -129,5 +139,11 @@ export class AppController {
                 posts : true,
             }
         })
+    }
+    
+    @Delete('user/profile/:id')
+    async deleteProfile(@Param('id') id: string) {
+        await this.profileRepository.delete(+id);
+        
     }
 }
