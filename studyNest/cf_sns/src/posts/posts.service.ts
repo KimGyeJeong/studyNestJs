@@ -60,18 +60,18 @@ export class PostsService {
     return post;
   }
 
-  async createPost(author: string, title: string, content: string) {
+  async createPost(authorId: number, title: string, content: string) {
     // create --> db에 맞는 객체 생성
     // save --> db에 create로 생성한 객체 저장
 
     const post = this.postsRepository.create({
-      author, title, content, likeCount: 0, commentCount: 0,
+      author:{id: authorId}, title, content, likeCount: 0, commentCount: 0,
     });
 
     return await this.postsRepository.save(post);
   }
 
-  async updatePost(id: number, author: string | undefined, title: string | undefined, content: string | undefined) {
+  async updatePost(id: number, title: string | undefined, content: string | undefined) {
     // save 의 기능
     // 1. 만약에 데이터가 존재하지 않는다면 (id기준으로) 새로 생성함.
     // 2. 만약에 데이터가 존재한다면 (같은 id의 값이 존재한다면) 존재하던 값을 업데이트 한다.
@@ -81,10 +81,7 @@ export class PostsService {
     if (!post) {
       throw new NotFoundException();
     }
-
-    if (author) {
-      post.author = author;
-    }
+    
     if (title) {
       post.title = title;
     }
