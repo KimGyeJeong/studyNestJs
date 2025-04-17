@@ -1,7 +1,7 @@
 import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {JwtService} from "@nestjs/jwt";
 import {UsersModel} from "../users/entities/users.entity";
-import {JWT_SECRET} from "./const/auth.const";
+import {JWT_SECRET, HASH_ROUNDS} from "./const/auth.const";
 import {UsersService} from "../users/users.service";
 import * as bcrypt from 'bcrypt';
 
@@ -84,10 +84,18 @@ export class AuthService {
         // 3. 모두 통과되면 찾은 사용자 정보 반환
         return existingUser;
     }
-    
+
     async loginWithEmail(user: Pick<UsersModel, 'email' | 'password'>) {
         const existingUser = await this.authenticateWithEmailAndPassword(user);
-        
+
         return this.loginUser(existingUser);
+    }
+
+    async registerWithEmail(user: Pick<UsersModel, 'nickname' | 'email' | 'password'>){
+        const hash = await bcrypt.hash(user.password, HASH_ROUNDS);
+        
+        const newUser = await this.userService.createUser(user);
+        
+        return this.loginUser(newUser);
     }
 }
