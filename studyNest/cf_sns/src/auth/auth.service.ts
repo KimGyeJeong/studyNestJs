@@ -1,7 +1,9 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {JwtService} from "@nestjs/jwt";
 import {UsersModel} from "../users/entities/users.entity";
 import {JWT_SECRET} from "./const/auth.const";
+import {UsersService} from "../users/users.service";
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -34,7 +36,10 @@ export class AuthService {
      *      4. loginWithEmail 에서 반환된 데이터를 기반으로 토큰 생성
      */
 
-    constructor(private readonly jwtService: JwtService) {
+    constructor(
+        private readonly jwtService: JwtService,
+        private readonly userService: UsersService,
+    ) {
     }
 
     /**
@@ -62,5 +67,21 @@ export class AuthService {
             accessToken: this.signToken(user, false),
             refreshToken: this.signToken(user, true),
         }
+    }
+
+    async authenticateWithEmailAndPassword(user: Pick<UsersModel, 'email' | 'password'>) {
+        // 1. 사용자가 존재하는지 확인(email)
+        const existingUser = await this.userService.getUserByEmail(user.email);
+        if (!existingUser) {
+            throw new UnauthorizedException('존재하지 않는 사용자입니다.');
+        }
+        // 2. 비밀번호가 맞는지 확인
+        // 파라미터. 1. 입력된 비밀번호, 2. 기존 해시(hash) -> 사용자 정보에 저장되어있는 hash
+        const passOk = await bcrypt.compare(user.password, existingUser.password);
+        if (!passOk) {
+            throw new UnauthorizedException('비밀번호가 틀렸습니다.');
+        }
+        // 3. 모두 통과되면 찾은 사용자 정보 반환
+        return existingUser;
     }
 }
