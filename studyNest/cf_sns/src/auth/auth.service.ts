@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {JwtService} from "@nestjs/jwt";
 import {UsersModel} from "../users/entities/users.entity";
 import {JWT_SECRET} from "./const/auth.const";
@@ -43,17 +43,24 @@ export class AuthService {
      * 2) sub -> id
      * 3) type : 'accessToken' | 'refreshToken'
      */
-    signToken(user:Pick<UsersModel, 'email' | 'id'>, isRefreshToken: boolean) {
+    signToken(user: Pick<UsersModel, 'email' | 'id'>, isRefreshToken: boolean) {
         const payload = {
             email: user.email,
             sub: user.id,
             type: isRefreshToken ? 'refresh' : 'access',
         };
-        
+
         return this.jwtService.sign(payload, {
-            secret : JWT_SECRET,
+            secret: JWT_SECRET,
             // 초 단위
-            expiresIn : isRefreshToken ? 60 * 60  : 60 * 5, 
+            expiresIn: isRefreshToken ? 60 * 60 : 60 * 5,
         });
+    }
+
+    loginUser(user: Pick<UsersModel, 'email' | 'id'>) {
+        return {
+            accessToken: this.signToken(user, false),
+            refreshToken: this.signToken(user, true),
+        }
     }
 }
