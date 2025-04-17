@@ -91,11 +91,11 @@ export class AuthService {
         return this.loginUser(existingUser);
     }
 
-    async registerWithEmail(user: Pick<UsersModel, 'nickname' | 'email' | 'password'>){
+    async registerWithEmail(user: Pick<UsersModel, 'nickname' | 'email' | 'password'>) {
         const hash = await bcrypt.hash(user.password, HASH_ROUNDS);
-        
-        const newUser = await this.userService.createUser(user);
-        
+
+        const newUser = await this.userService.createUser({...user, password: hash});
+
         return this.loginUser(newUser);
     }
 }
