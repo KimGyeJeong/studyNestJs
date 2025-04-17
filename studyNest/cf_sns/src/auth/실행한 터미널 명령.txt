@@ -1,0 +1,8 @@
+cd studyNest/cf_sns
+nest g resource
+    ✔ What name would you like to use for this resource (plural, e.g., "users")? auth
+    ✔ What transport layer do you use? REST API
+    ✔ Would you like to generate CRUD entry points? No
+    
+npm install @nestjs/jwt bcrypt
+
