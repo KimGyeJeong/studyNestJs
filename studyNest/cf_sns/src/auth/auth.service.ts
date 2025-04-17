@@ -84,4 +84,10 @@ export class AuthService {
         // 3. 모두 통과되면 찾은 사용자 정보 반환
         return existingUser;
     }
+    
+    async loginWithEmail(user: Pick<UsersModel, 'email' | 'password'>) {
+        const existingUser = await this.authenticateWithEmailAndPassword(user);
+        
+        return this.loginUser(existingUser);
+    }
 }
