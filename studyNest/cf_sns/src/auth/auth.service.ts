@@ -1,7 +1,7 @@
 import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {JwtService} from "@nestjs/jwt";
 import {UsersModel} from "../users/entities/users.entity";
-import {JWT_SECRET, HASH_ROUNDS} from "./const/auth.const";
+import {HASH_ROUNDS, JWT_SECRET} from "./const/auth.const";
 import {UsersService} from "../users/users.service";
 import * as bcrypt from 'bcrypt';
 
@@ -60,6 +60,22 @@ export class AuthService {
      *      refresh 토큰을 새로 발급 받을 수 있는 /auth/token/refresh가 필요하다.
      * 6. 토큰이 만료되면 각각의 토큰을 새로 발급 받을 수 있는 엔드포인트에 요청을 해서 새로운 토큰을 발급받고 새로운 토큰을 사용해서 private route에 접근한다.
      */
+
+    /**
+     * Header 로 부터 토큰을 받을때
+     * 
+     * {authorization: 'Basic {token}'}
+     * {authorization: 'Bearer {token}'}
+     */
+    async extractTokenFromHeader(header: string, isBearer: boolean){
+        const splitToken = header.split(" ");
+        const prefix = isBearer ? "Bearer " : "Basic";
+        if (splitToken.length !== 2 || splitToken[0] !== prefix){
+            throw new UnauthorizedException("Invalid token");
+        }
+        return splitToken[1];
+    }
+
 
     /**
      * Payload에 들어갈 정보
