@@ -44,7 +44,7 @@ export class AuthService {
 
     /**
      * 토큰을 사용하게 되는 방식
-     * 
+     *
      * 1. 사용자가 로그인 또는 회원가입을 진행하면 accessToken과 refreshToken을 발급받는다.
      * 2. 로그인 할때에는 Basic 토큰과 함께 요청을 보낸다.
      *      - Basic 토큰은 '이메일:비밀번호'를 Base64로 인코딩한 형태이다.
@@ -63,17 +63,29 @@ export class AuthService {
 
     /**
      * Header 로 부터 토큰을 받을때
-     * 
+     *
      * {authorization: 'Basic {token}'}
      * {authorization: 'Bearer {token}'}
      */
-    async extractTokenFromHeader(header: string, isBearer: boolean){
+    extractTokenFromHeader(header: string, isBearer: boolean) {
         const splitToken = header.split(" ");
         const prefix = isBearer ? "Bearer " : "Basic";
-        if (splitToken.length !== 2 || splitToken[0] !== prefix){
+        if (splitToken.length !== 2 || splitToken[0] !== prefix) {
             throw new UnauthorizedException("Invalid token");
         }
         return splitToken[1];
+    }
+
+    // 1. base64로 인코딩된 문자열을 -> email:password 형식으로 변환
+    // 2. email:password -> [email:password]
+    // 3. return {email: email, password: password}
+    decodeBasicToken(base64String: string) {
+        const decoded = Buffer.from(base64String, 'base64').toString('utf8');
+        const split = decoded.split(':');
+        if (split.length !== 2) {
+            throw new UnauthorizedException("Invalid Base token");
+        }
+        return {email: split[0], password: split[1]};
     }
 
 
