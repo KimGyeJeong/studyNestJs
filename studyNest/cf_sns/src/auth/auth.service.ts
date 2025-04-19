@@ -101,14 +101,10 @@ export class AuthService {
             secret: JWT_SECRET,
         });
 
-        console.log('3232')
-
         // sub : id, email : email, type: 'access' | 'refresh'
         if (decoded.type !== 'refresh') {
             throw new UnauthorizedException("토큰 재발급은 refresh 토큰으로만 가능합니다.");
         }
-
-        console.log('4242')
 
         return this.signToken({...decoded}, isRefreshToken);
     }
