@@ -69,10 +69,11 @@ export class AuthService {
      */
     extractTokenFromHeader(header: string, isBearer: boolean) {
         const splitToken = header.split(" ");
-        const prefix = isBearer ? "Bearer " : "Basic";
+        const prefix = isBearer ? "Bearer" : "Basic";
         if (splitToken.length !== 2 || splitToken[0] !== prefix) {
             throw new UnauthorizedException("Invalid token");
         }
+
         return splitToken[1];
     }
 
@@ -86,6 +87,30 @@ export class AuthService {
             throw new UnauthorizedException("Invalid Base token");
         }
         return {email: split[0], password: split[1]};
+    }
+
+    // 토큰 검증
+    verifyToken(token: string) {
+        return this.jwtService.verify(token, {
+            secret: JWT_SECRET,
+        });
+    }
+
+    rotateToken(token: string, isRefreshToken: boolean) {
+        const decoded = this.jwtService.verify(token, {
+            secret: JWT_SECRET,
+        });
+
+        console.log('3232')
+
+        // sub : id, email : email, type: 'access' | 'refresh'
+        if (decoded.type !== 'refresh') {
+            throw new UnauthorizedException("토큰 재발급은 refresh 토큰으로만 가능합니다.");
+        }
+
+        console.log('4242')
+
+        return this.signToken({...decoded}, isRefreshToken);
     }
 
 
