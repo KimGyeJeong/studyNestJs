@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post } from '@nestjs/common';
+import {Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Patch, Post} from '@nestjs/common';
 import { PostsService } from './posts.service';
 
 
@@ -17,9 +17,16 @@ export class PostsController {
   // 2) GET /posts/:id
   // id에 해당하는 post 가져오기.
   @Get(':id')
-  getPost(@Param('id') id: string) {
-    return this.postsService.getPostById(+id);
+  getPost(@Param('id', ParseIntPipe) id: number) {
+    return this.postsService.getPostById(id);
   }
+  // ParseIntPipe 시 int형이 아닌 문자형(예. asdf)이 들어오면
+  // {
+  // "message": "Validation failed (numeric string is expected)",
+  // "error": "Bad Request",
+  // "statusCode": 400
+  // }
+  // 가 발생
 
   // 3) POST /posts
   // post 생성
@@ -36,20 +43,20 @@ export class PostsController {
   // post 수정
   @Patch(':id')
   patchPost(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body('title') title?: string,
     @Body('content') content?: string,
   ) {
-    return this.postsService.updatePost(+id, title, content);
+    return this.postsService.updatePost(id, title, content);
   }
 
   // 5) DELETE /posts/:id
   // post 삭제
   @Delete(':id')
   deletePost(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
   ) {
-    return this.postsService.deletePost(+id);
+    return this.postsService.deletePost(id);
   }
 
 }
