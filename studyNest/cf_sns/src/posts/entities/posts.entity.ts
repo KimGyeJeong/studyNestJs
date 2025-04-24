@@ -1,10 +1,9 @@
-import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn} from 'typeorm';
 import {UsersModel} from "../../users/entities/users.entity";
+import {BaseModel} from "../../common/entities/base.entity";
 
 @Entity()
-export class PostsModel {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class PostsModel extends BaseModel{
 
   // 1) FK를 이용해서 UserModel과 연동한다.
   // 2) null이 될 수 없다.
