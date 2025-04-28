@@ -126,7 +126,8 @@ export class AuthService {
         return this.jwtService.sign(payload, {
             secret: JWT_SECRET,
             // 초 단위
-            expiresIn: isRefreshToken ? 60 * 60 : 60 * 5,
+            // expiresIn: isRefreshToken ? 60 * 60 : 60 * 5,
+            expiresIn: isRefreshToken ? 60 * 60 * 24 : 60 * 60,
         });
     }
 
