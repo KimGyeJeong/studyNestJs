@@ -48,12 +48,11 @@ export class PostsController {
     @Post()
     @UseGuards(AccessTokenGuard)
     postPosts(
-        @User() user: UsersModel,
+        @User('id') userId: number,
         @Body('title') title: string,
         @Body('content') content: string,
     ) {
-        const authorId = user.id;
-        return this.postsService.createPost(authorId, title, content);
+        return this.postsService.createPost(userId, title, content);
     }
 
     // 4) Patch /posts/:id
