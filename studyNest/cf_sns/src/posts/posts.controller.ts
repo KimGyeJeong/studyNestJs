@@ -15,6 +15,7 @@ import {AccessTokenGuard} from "src/auth/guard/bearer-token.guard";
 import {User} from "src/users/decorator/user.decorator";
 import {UsersModel} from "../users/entities/users.entity";
 import {CreatePostDto} from "./dto/create-post.dto";
+import {UpdatePostDto} from "./dto/update-post.dto";
 
 
 @Controller('posts')
@@ -63,10 +64,11 @@ export class PostsController {
     @Patch(':id')
     patchPost(
         @Param('id', ParseIntPipe) id: number,
-        @Body('title') title?: string,
-        @Body('content') content?: string,
+        // @Body('title') title?: string,
+        // @Body('content') content?: string,
+        @Body() body: UpdatePostDto
     ) {
-        return this.postsService.updatePost(id, title, content);
+        return this.postsService.updatePost(id, body);
     }
 
     // 5) DELETE /posts/:id
