@@ -9,6 +9,7 @@ import {emailValidationMessage} from "../../common/validation-message/email-vali
 import {Exclude, Expose} from "class-transformer";
 
 @Entity()
+@Exclude()  // class가 보안에 중요하다면 클래스 전체에 exclude 를 할수 있다(기본적으로 전체 expose). 필요한 항목에 대해서만 expose 데코레이터를 사용하면 된다.
 export class UsersModel extends BaseModel {
 
     @Column({
@@ -21,12 +22,14 @@ export class UsersModel extends BaseModel {
     @Length(1, 20, {
         message: lengthValidationMessage
     })
+    @Expose()
     nickname: string;
 
     @Column()
     // 1) 유일무이한 값
     @IsString({message: stringValidationMessage})
     @IsEmail({}, {message:emailValidationMessage})
+    @Expose()
     email: string;
 
     @Column()
@@ -60,9 +63,4 @@ export class UsersModel extends BaseModel {
 
     @OneToMany(() => PostsModel, (post) => post.author)
     posts: PostsModel[];
-
-    @Expose()
-    get emailAndNickname() {
-        return this.email + '/' + this.nickname;
-    }
 }
