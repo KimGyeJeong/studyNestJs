@@ -32,7 +32,24 @@ export class UsersModel extends BaseModel {
     @Column()
     @IsString({message: stringValidationMessage})
     @Length(3, 8,{message:lengthValidationMessage})
-    @Exclude()
+    /**
+     * Exclude
+     * 
+     * Request
+     * frontend --> backend
+     * plain object(JSON)--> class instance(dto)
+     * 
+     * Response
+     * backend --> frontend
+     * class insance(dto) --> plain object(JSON)
+     * 
+     * Option
+     * - toClassOnly: class instance 변환될때 (Request)
+     * - toPlainOnly: plain Object로 변환될때 (Response)
+     * 
+     * option 을 적용하지 않으면 기본으로 둘다 적용
+     */
+    @Exclude({toPlainOnly:true})    // Response 할때에만 제외시킴
     password: string;
 
     @Column({

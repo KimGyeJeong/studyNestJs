@@ -13,7 +13,8 @@ export class UsersController {
   // }
   
   @Get()
-  @UseInterceptors(ClassSerializerInterceptor)
+  // appModule에서 사용
+  // @UseInterceptors(ClassSerializerInterceptor)
   /**
    * Serialization --> 직렬화
    * 현재 시스템(nestJS)에서 사용되는 데이터의 구조를 다른 시스템에서도 쉽게 사용할 수 있는 포멧으로 변환
