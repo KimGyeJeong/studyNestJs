@@ -6,7 +6,7 @@ import {IsEmail, IsString, Length, ValidationArguments} from "class-validator";
 import {lengthValidationMessage} from "../../common/validation-message/length-validation.message";
 import {stringValidationMessage} from "../../common/validation-message/string-validation.message";
 import {emailValidationMessage} from "../../common/validation-message/email-validation.message";
-import {Exclude} from "class-transformer";
+import {Exclude, Expose} from "class-transformer";
 
 @Entity()
 export class UsersModel extends BaseModel {
@@ -61,4 +61,8 @@ export class UsersModel extends BaseModel {
     @OneToMany(() => PostsModel, (post) => post.author)
     posts: PostsModel[];
 
+    @Expose()
+    get emailAndNickname() {
+        return this.email + '/' + this.nickname;
+    }
 }
