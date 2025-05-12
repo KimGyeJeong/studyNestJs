@@ -77,7 +77,23 @@ export class PostsService {
     }
 
     async pagePaginatePosts(dto: PaginatePostDto) {
+        /**
+         * data : Data[],
+         * total: number,
+         * next: ?? (url 넣어주어도 괜찮음) --> 잘쓰이지는 않음
+         *
+         * [1] [2] [3]... 형식으로 화면에 페이지들이 구현되어있음
+         */
 
+        const posts = await this.postsRepository.find({
+            order: {
+                createdAt: dto.order__createdAt,
+            },
+            take: dto.take,
+            skip: dto.take * ((dto.page ?? 1) - 1),
+        });
+
+        return {data: posts};
     }
 
     async cursorPaginatePosts(dto: PaginatePostDto) {
