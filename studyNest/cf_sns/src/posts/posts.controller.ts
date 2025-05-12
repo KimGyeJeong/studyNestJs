@@ -81,5 +81,15 @@ export class PostsController {
     ) {
         return this.postsService.deletePost(id);
     }
+    
+    // Create Sample
+    // /posts/random
+    @Post('random')
+    @UseGuards(AccessTokenGuard)
+    async postPostsRandom(@User() user: UsersModel) {
+        await this.postsService.generateRandomPost(user.id);
+        
+        return true;
+    }
 
 }

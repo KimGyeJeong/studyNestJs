@@ -55,6 +55,15 @@ export class PostsService {
             relations: ['author'],
         });
     }
+    
+    async generateRandomPost(userId: number) {
+        for (let i = 0; i < 100; i++) {
+            await this.createPost(userId,{
+                title: `sample title ${i}`,
+                content: `sample content ${i}`,
+            });
+        }
+    }
 
     // 1) 오름차순으로 정렬하는 pagination만 구현
     async paginatePosts(dto: PaginatePostDto) {
