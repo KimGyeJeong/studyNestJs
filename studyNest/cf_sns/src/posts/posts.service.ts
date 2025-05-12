@@ -86,7 +86,6 @@ export class PostsService {
          * count: 응답한 데이터의 갯수
          * next: 다음 요청을 할때 사용할 URL
          */
-        console.log(`post : ${posts}`)
 
         return {
             data: posts,

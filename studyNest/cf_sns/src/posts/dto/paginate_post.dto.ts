@@ -1,8 +1,10 @@
 import {IsIn, IsNumber, IsOptional} from "class-validator";
+import {Type} from "class-transformer";
 
 export class PaginatePostDto {
     // 이전 마지막 데이터의 ID
     // 이 프로퍼티에 입력된 ID보다 높은 ID부터 값을 가져오기
+    @Type(()=> Number)  // (url)String --> Number 형식으로 변환
     @IsNumber()
     @IsOptional()
     where__id_more_than?: number;
@@ -17,5 +19,5 @@ export class PaginatePostDto {
     // 몇개의 데이터를 입력받을지
     @IsNumber()
     @IsOptional()
-    take: number = 5;
+    take: number = 20;
 }
