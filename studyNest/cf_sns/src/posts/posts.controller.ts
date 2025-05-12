@@ -8,7 +8,7 @@ import {
     Param,
     ParseIntPipe,
     Patch,
-    Post, UseGuards, Request
+    Post, UseGuards, Request, Query
 } from '@nestjs/common';
 import {PostsService} from './posts.service';
 import {AccessTokenGuard} from "src/auth/guard/bearer-token.guard";
@@ -16,6 +16,7 @@ import {User} from "src/users/decorator/user.decorator";
 import {UsersModel} from "../users/entities/users.entity";
 import {CreatePostDto} from "./dto/create-post.dto";
 import {UpdatePostDto} from "./dto/update-post.dto";
+import {PaginatePostDto} from "./dto/paginate_post.dto";
 
 
 @Controller('posts')
@@ -26,7 +27,7 @@ export class PostsController {
     // 1) GET /posts
     // 모든 post 가져오기
     @Get()
-    getPosts() {
+    getPosts(@Query() query: PaginatePostDto) {
         return this.postsService.getAllPosts();
     }
 
