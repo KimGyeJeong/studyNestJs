@@ -9,12 +9,16 @@ export class PaginatePostDto {
     @IsOptional()
     where__id_more_than?: number;
 
+    @IsNumber()
+    @IsOptional()
+    where__id_less_than?: number;
+
     // 정렬
     // createdAt --> 생성된 시간의 내림차/오름차 순으로 정렬
     // 1. 지금은 오름차 순으로만 실행
-    @IsIn(['ASC'])  // 배열안의 값만 pass 할수 있음
+    @IsIn(['ASC', 'DESC'])  // 배열안의 값만 pass 할수 있음
     @IsOptional()
-    order__createdAt: 'ASC' = 'ASC';
+    order__createdAt: 'ASC' | 'DESC' = 'ASC';
 
     // 몇개의 데이터를 입력받을지
     @IsNumber()

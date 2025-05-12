@@ -68,7 +68,6 @@ export class PostsService {
 
     // 1) 오름차순으로 정렬하는 pagination만 구현
     async paginatePosts(dto: PaginatePostDto) {
-        console.log(dto.where__id_more_than)
         const posts = await this.postsRepository.find({
             where: {
                 id: MoreThan(dto.where__id_more_than ?? 0),
@@ -106,12 +105,24 @@ export class PostsService {
              */
             for (const key of Object.keys(dto)) {
                 if (dto[key]) {
-                    if (key !== 'where__id_more_than') {
+                    if (key !== 'where__id_more_than' && key !== 'where__id_less_than') {
                         nextUrl.searchParams.append(key, dto[key]);
                     }
                 }
             }
-            nextUrl.searchParams.append('where__id_more_than', lastItem.id.toString());
+            // let key = 'where__id_more_than';
+            //
+            // if (dto.order__createdAt === 'DESC')
+            //     key = 'where__id_less_than';
+            
+            let key : string | null = null;
+            
+            if (dto.order__createdAt === 'ASC')
+                key = 'where__id_more_than';
+            else if (dto.order__createdAt === 'DESC')
+                key = 'where__id_less_than';
+            
+            nextUrl.searchParams.append(key ?? '', lastItem.id.toString());
         }
         return {
             data: posts,
