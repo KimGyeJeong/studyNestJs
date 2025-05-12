@@ -85,7 +85,7 @@ export class PostsService {
          * [1] [2] [3]... 형식으로 화면에 페이지들이 구현되어있음
          */
 
-        const posts = await this.postsRepository.find({
+        const [posts, count] = await this.postsRepository.findAndCount({
             order: {
                 createdAt: dto.order__createdAt,
             },
@@ -93,7 +93,7 @@ export class PostsService {
             skip: dto.take * ((dto.page ?? 1) - 1),
         });
 
-        return {data: posts};
+        return {data: posts, total: count,};
     }
 
     async cursorPaginatePosts(dto: PaginatePostDto) {
