@@ -4,7 +4,7 @@ import {Type} from "class-transformer";
 export class PaginatePostDto {
     // 이전 마지막 데이터의 ID
     // 이 프로퍼티에 입력된 ID보다 높은 ID부터 값을 가져오기
-    @Type(()=> Number)  // (url)String --> Number 형식으로 변환
+    // @Type(()=> Number)  // (url)String --> Number 형식으로 변환
     @IsNumber()
     @IsOptional()
     where__id_more_than?: number;
