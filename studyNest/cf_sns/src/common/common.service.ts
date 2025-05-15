@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {BasePaginationDto} from "./dto/base-pagination.dto";
 import {BaseModel} from "./entities/base.entity";
-import {FindManyOptions, Repository} from "typeorm";
+import {FindManyOptions, FindOptionsOrder, FindOptionsWhere, Repository} from "typeorm";
 
 @Injectable()
 export class CommonService {
@@ -44,16 +44,16 @@ export class CommonService {
 
         /**
          * DTO의 현재 생긴 구조는 다음과 같음
-         * 
+         *
          * {
          *     where__id_more_than: 1,
          *     order__createdAt: 'ASC',
          * }
-         * 
+         *
          * 현재는 where__id__more_than / where__id__less_than에 해당되는 where 필터만 사용중이지만
          * 나중에 where__likeCount__more_than 이나 where__title__ilike 등 추가 필터를 넣고 싶어졌을때
          * 모든 where 필터들을 자동으로 파싱 할 수 있을만한 기능을 제작해야한다.
-         * 
+         *
          * 1. where 로 시작한다면 필터 로직을 적용한다.
          * 2. order 로 시작한다면 정렬 로직을 적용한다.
          * 3. 필터 로직을 적용한다면 '__' 기준으로 split을 했을때 3개의 값으로 나뉘는지, 2개의 값으로 나뉘는지 확인한다.
@@ -63,6 +63,42 @@ export class CommonService {
          *      where__id  --> ['where', 'id']
          * 4. order의 경우 3-2와 같이 적용한다. (항상 2개로 split 되기 때문)
          */
+
+        let where: FindOptionsWhere<T> = {};
+        let order: FindOptionsOrder<T> = {};
+
+        for (const [key, value] of Object.entries(dto)) {
+            // 예.
+            // key --> where__id__less_than
+            // value --> 1
+
+            if (key.startsWith('where__')) {
+                where = {
+                    ...where,
+                    ...this.parseWhereFilter(key, value),
+                };
+            } else if (key.startsWith('order__')) {
+                order = {
+                    ...order,
+                    ...this.parseOrderFilter(key, value),
+
+                }
+            }
+        }
+
+        return {
+            where,
+            order,
+            take: dto.take,
+            skip: dto.page ? dto.take * (dto.page - 1) : undefined,
+        }
+    }
+
+    private parseWhereFilter<T extends BaseModel>(key: string, value: any): FindOptionsWhere<T> {
+        return {}
+    }
+
+    private parseOrderFilter<T extends BaseModel>(key: string, value: any): FindOptionsOrder<T> {
         return {}
     }
 }
