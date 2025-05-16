@@ -29,6 +29,8 @@ export class CommonService {
          *
          * where__title__ilike
          */
+
+        const findOptions = this.composeFindOptions<T>(dto);
     }
 
     private async pagePaginate<T extends BaseModel>(
@@ -81,7 +83,7 @@ export class CommonService {
             } else if (key.startsWith('order__')) {
                 order = {
                     ...order,
-                    ...this.parseOrderFilter(key, value),
+                    ...this.parseWhereFilter(key, value),
 
                 }
             }
@@ -95,7 +97,7 @@ export class CommonService {
         }
     }
 
-    private parseWhereFilter<T extends BaseModel>(key: string, value: any): FindOptionsWhere<T> {
+    private parseWhereFilter<T extends BaseModel>(key: string, value: any): FindOptionsWhere<T> | FindOptionsOrder<T> {
         const options: FindOptionsWhere<T> = {};
         /**
          * 예를들어 where__id__more_than
@@ -121,33 +123,33 @@ export class CommonService {
             /**
              * field --> 'id'
              * value --> 3
-             * 
+             *
              * { id: 3}
              */
 
             options[field] = value;
-        }else {
+        } else {
             /**
              * 길이가 3일 경우에는 TypeOrm 유틸리티 적용이 필요한 경우이다.
-             * 
+             *
              * where__id_more_than의 경우
              * where는 버려도 되고 두번째 값은 필터할 키값이 되고
              * 세번째 값은 typeorm 유틸리티가 된다.
-             * 
+             *
              * FILTER_MAPPER에 미리 정의해둔 값들로
              * field 값에 FILTER_MAPPER에서 해당되는 utility를 가져온 후
              * 값에 적용 해준다
              */
-            
+
                 // ['where', 'id', 'more_than']
             const [_, field, operator] = split;
-            
+
             // where__id__between = 3,4
             // 만약 split 대상 문자가 존재하지 않으면 길이가 무조건 1이다.
             // const values = value.toString().split(',');
-            
+
             options[field] = FILTER_MAPPER[operator](value);
-            
+
             // if (operator !== 'between') {
             //     // field --> id
             //     // operator --> more_than
@@ -157,30 +159,10 @@ export class CommonService {
             //     //between 인 경우에 인자가 두개 들어감
             //     options[field] = FILTER_MAPPER[operator](values[0],values[1]);
             // }
-            
+
         }
-        
+
         return {}
     }
 
-    private parseOrderFilter<T extends BaseModel>(key: string, value: any): FindOptionsOrder<T> {
-        const order : FindOptionsOrder<T> = {};
-
-        /**
-         * order 는 무조건 2개로 split 됨.
-         */
-        const split = key.split('__');
-        
-        if (split.length !== 2) {
-            throw new BadRequestException(
-                `order 필터는 '__'로 split 하였을때 길이가 2이어야 합니다. 현재 키값 : ${key}`
-            )
-        }
-        
-        const [_, field] = split;
-        
-        order[field] = value;
-
-        return order;
-    }
 }
