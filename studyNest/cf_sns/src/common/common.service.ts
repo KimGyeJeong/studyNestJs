@@ -164,6 +164,23 @@ export class CommonService {
     }
 
     private parseOrderFilter<T extends BaseModel>(key: string, value: any): FindOptionsOrder<T> {
-        return {}
+        const order : FindOptionsOrder<T> = {};
+
+        /**
+         * order 는 무조건 2개로 split 됨.
+         */
+        const split = key.split('__');
+        
+        if (split.length !== 2) {
+            throw new BadRequestException(
+                `order 필터는 '__'로 split 하였을때 길이가 2이어야 합니다. 현재 키값 : ${key}`
+            )
+        }
+        
+        const [_, field] = split;
+        
+        order[field] = value;
+
+        return order;
     }
 }
