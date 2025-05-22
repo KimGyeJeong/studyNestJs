@@ -89,7 +89,17 @@ export class CommonService {
         dto: BasePaginationDto,
         repository: Repository<T>,
         overrideFindOptions: FindManyOptions<T> = {},) {
-
+        const findOptions = this.composeFindOptions<T>(dto);
+        
+        const [data, count] = await repository.findAndCount({
+            ...findOptions,
+            ...overrideFindOptions,
+        });
+        
+        return {
+            data,
+            total: count, 
+        }
     }
 
     private composeFindOptions<T extends BaseModel>(dto: BasePaginationDto): FindManyOptions<T> {
