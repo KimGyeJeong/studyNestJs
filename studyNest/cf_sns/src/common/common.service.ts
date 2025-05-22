@@ -217,9 +217,12 @@ export class CommonService {
             // where__id__between = 3,4
             // 만약 split 대상 문자가 존재하지 않으면 길이가 무조건 1이다.
             // const values = value.toString().split(',');
-
-            options[field] = FILTER_MAPPER[operator](value);
-
+            
+            if (operator == 'i_like') {
+                options[field] = FILTER_MAPPER[operator](`%${value}%`);
+            }else {
+                options[field] = FILTER_MAPPER[operator](value);
+            }
             // if (operator !== 'between') {
             //     // field --> id
             //     // operator --> more_than
