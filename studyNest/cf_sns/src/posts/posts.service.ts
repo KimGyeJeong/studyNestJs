@@ -6,6 +6,7 @@ import {CreatePostDto} from "./dto/create-post.dto";
 import {UpdatePostDto} from "./dto/update-post.dto";
 import {PaginatePostDto} from "./dto/paginate_post.dto";
 import {HOST, PROTOCOL} from "../common/const/env.const";
+import {CommonService} from "../common/common.service";
 
 export interface PostModel {
     id: number;
@@ -48,7 +49,8 @@ let posts: PostModel[] = [
 export class PostsService {
     constructor(
         @InjectRepository(PostsModel)
-        private readonly postsRepository: Repository<PostsModel>) {
+        private readonly postsRepository: Repository<PostsModel>,
+        private readonly commonService: CommonService,) {
     }
 
     async getAllPosts() {
@@ -68,11 +70,12 @@ export class PostsService {
 
     // 1) 오름차순으로 정렬하는 pagination만 구현
     async paginatePosts(dto: PaginatePostDto) {
-        if (dto.page) {
-            return this.pagePaginatePosts(dto);
-        } else {
-            return this.cursorPaginatePosts(dto)
-        }
+        // if (dto.page) {
+        //     return this.pagePaginatePosts(dto);
+        // } else {
+        //     return this.cursorPaginatePosts(dto)
+        // }
+        return this.commonService.paginate(dto, this.postsRepository, {}, 'posts');
 
     }
 
