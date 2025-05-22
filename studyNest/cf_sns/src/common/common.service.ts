@@ -136,15 +136,11 @@ export class CommonService {
             // value --> 1
 
             if (key.startsWith('where__')) {
-                console.log('startswith where__');
-                console.log(`key = ${key}, value: ${value}`);
                 where = {
                     ...where,
                     ...this.parseWhereFilter(key, value),
                 };
             } else if (key.startsWith('order__')) {
-                console.log('order__');
-                console.log(`key = ${key}, value: ${value}`);
                 order = {
                     ...order,
                     ...this.parseWhereFilter(key, value),
