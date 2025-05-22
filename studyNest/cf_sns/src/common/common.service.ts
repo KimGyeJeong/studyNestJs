@@ -33,8 +33,6 @@ export class CommonService {
 
         const findOptions = this.composeFindOptions<T>(dto);
 
-        console.log('find option', findOptions);
-
         const results = await repository.find({
             ...findOptions,
             ...overrideFindOptions,
@@ -43,7 +41,7 @@ export class CommonService {
         const lastItem = results.length > 0 && results.length === dto.take ? results[results.length - 1] : null;
 
         // const nextUrl = lastItem && new URL('http://localhost:3000/posts');
-        const nextUrl = lastItem && new URL(`${PROTOCOL}://${HOST}/posts`);
+        const nextUrl = lastItem && new URL(`${PROTOCOL}://${HOST}/${path}`);
 
         if (nextUrl) {
             /**
@@ -145,10 +143,11 @@ export class CommonService {
                     ...this.parseWhereFilter(key, value),
                 };
             } else if (key.startsWith('order__')) {
+                console.log('order__');
+                console.log(`key = ${key}, value: ${value}`);
                 order = {
                     ...order,
                     ...this.parseWhereFilter(key, value),
-
                 }
             }
         }
@@ -162,6 +161,13 @@ export class CommonService {
     }
 
     private parseWhereFilter<T extends BaseModel>(key: string, value: any): FindOptionsWhere<T> | FindOptionsOrder<T> {
+
+        //undefined 값을 가진 LessThan, MoreThan 등은 절대 쿼리 조건으로 들어가면 안 됨!!
+        // WHERE id < NULL  --> 조건이 항상 false가 되어 결과 없음
+        if (value === undefined || value === null || value === '') {
+            return {};
+        }
+        
         const options: FindOptionsWhere<T> = {};
         /**
          * 예를들어 where__id__more_than
@@ -205,7 +211,7 @@ export class CommonService {
              * 값에 적용 해준다
              */
 
-                // ['where', 'id', 'more_than']
+            // ['where', 'id', 'more_than']
             const [_, field, operator] = split;
 
             // where__id__between = 3,4
@@ -226,8 +232,6 @@ export class CommonService {
 
         }
 
-        // return options;
-        return {};
+        return options;
     }
-
 }
