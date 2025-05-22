@@ -75,7 +75,9 @@ export class PostsService {
         // } else {
         //     return this.cursorPaginatePosts(dto)
         // }
-        return this.commonService.paginate(dto, this.postsRepository, {}, 'posts');
+        return this.commonService.paginate(dto, this.postsRepository, {
+            relations: ['author'],
+        }, 'posts');
 
     }
 
