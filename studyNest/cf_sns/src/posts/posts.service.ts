@@ -5,8 +5,9 @@ import {PostsModel} from './entities/posts.entity';
 import {CreatePostDto} from "./dto/create-post.dto";
 import {UpdatePostDto} from "./dto/update-post.dto";
 import {PaginatePostDto} from "./dto/paginate_post.dto";
-import {HOST, PROTOCOL} from "../common/const/env.const";
 import {CommonService} from "../common/common.service";
+import {ConfigService} from "@nestjs/config";
+import {ENV_HOST_KEY, ENV_PROTOCOL_KEY} from "../common/const/env-keys.const";
 
 export interface PostModel {
     id: number;
@@ -50,7 +51,9 @@ export class PostsService {
     constructor(
         @InjectRepository(PostsModel)
         private readonly postsRepository: Repository<PostsModel>,
-        private readonly commonService: CommonService,) {
+        private readonly commonService: CommonService,
+        private readonly configService: ConfigService,
+        ) {
     }
 
     async getAllPosts() {
@@ -133,7 +136,7 @@ export class PostsService {
         const lastItem = posts.length > 0 && posts.length === dto.take ? posts[posts.length - 1] : null;
 
         // const nextUrl = lastItem && new URL('http://localhost:3000/posts');
-        const nextUrl = lastItem && new URL(`${PROTOCOL}://${HOST}/posts`);
+        const nextUrl = lastItem && new URL(`${this.configService.get<string>(ENV_PROTOCOL_KEY)}://${this.configService.get<string>(ENV_HOST_KEY)}/posts`);
 
         if (nextUrl) {
             /**
