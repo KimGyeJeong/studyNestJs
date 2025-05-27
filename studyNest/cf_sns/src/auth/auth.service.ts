@@ -1,10 +1,11 @@
 import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {JwtService} from "@nestjs/jwt";
 import {UsersModel} from "../users/entities/users.entity";
-import {HASH_ROUNDS, JWT_SECRET} from "./const/auth.const";
 import {UsersService} from "../users/users.service";
 import * as bcrypt from 'bcrypt';
 import { RegisterUserDTO } from './dto/register-user.dto';
+import {ConfigService} from "@nestjs/config";
+import {ENV_HASH_ROUNDS_KEY, ENV_JWT_SECRET_KEY} from "../common/const/env-keys.const";
 
 @Injectable()
 export class AuthService {
@@ -40,6 +41,7 @@ export class AuthService {
     constructor(
         private readonly jwtService: JwtService,
         private readonly userService: UsersService,
+        private readonly configService: ConfigService,
     ) {
     }
 
@@ -94,7 +96,7 @@ export class AuthService {
     verifyToken(token: string) {
         try {
             return this.jwtService.verify(token, {
-                secret: JWT_SECRET,
+                secret: this.configService.get<string>(ENV_JWT_SECRET_KEY),
             });
         }catch (error) {
             throw new UnauthorizedException('토큰이 만료되었거나 잘못된 토큰입니다.');
@@ -103,7 +105,7 @@ export class AuthService {
 
     rotateToken(token: string, isRefreshToken: boolean) {
         const decoded = this.jwtService.verify(token, {
-            secret: JWT_SECRET,
+            secret: this.configService.get<string>(ENV_JWT_SECRET_KEY),
         });
 
         // sub : id, email : email, type: 'access' | 'refresh'
@@ -129,7 +131,7 @@ export class AuthService {
         };
 
         return this.jwtService.sign(payload, {
-            secret: JWT_SECRET,
+            secret: this.configService.get<string>(ENV_JWT_SECRET_KEY),
             // 초 단위
             // expiresIn: isRefreshToken ? 60 * 60 : 60 * 5,
             expiresIn: isRefreshToken ? 60 * 60 * 24 : 60 * 60,
@@ -166,7 +168,7 @@ export class AuthService {
     }
 
     async registerWithEmail(user: RegisterUserDTO) {
-        const hash = await bcrypt.hash(user.password, HASH_ROUNDS);
+        const hash = await bcrypt.hash(user.password, parseInt(this.configService.get<string>(ENV_HASH_ROUNDS_KEY) ?? '10'));
 
         const newUser = await this.userService.createUser({...user, password: hash});
 
