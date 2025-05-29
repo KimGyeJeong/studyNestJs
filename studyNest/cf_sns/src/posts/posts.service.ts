@@ -53,7 +53,7 @@ export class PostsService {
         private readonly postsRepository: Repository<PostsModel>,
         private readonly commonService: CommonService,
         private readonly configService: ConfigService,
-        ) {
+    ) {
     }
 
     async getAllPosts() {
@@ -184,12 +184,12 @@ export class PostsService {
         return post;
     }
 
-    async createPost(authorId: number, postDTO: CreatePostDto) {
+    async createPost(authorId: number, postDTO: CreatePostDto, image?: string) {
         // create --> db에 맞는 객체 생성
         // save --> db에 create로 생성한 객체 저장
 
         const post = this.postsRepository.create({
-            author: {id: authorId}, ...postDTO, likeCount: 0, commentCount: 0,
+            author: {id: authorId}, ...postDTO, image, likeCount: 0, commentCount: 0,
         });
 
         return await this.postsRepository.save(post);

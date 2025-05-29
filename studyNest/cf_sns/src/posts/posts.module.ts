@@ -28,9 +28,9 @@ import {v4 as uuid} from 'uuid';
        */
       
       // xxx.jpg --> .jpg
-      const ext = extname(file.originalname);
+      const ext = extname(file.originalname).toLowerCase();
       
-      if (ext !== 'jpg' && ext !== 'png' && ext !== 'jpeg') {
+      if (ext !== '.jpg' && ext !== '.png' && ext !== '.jpeg') {
         return cb(new BadRequestException('only jpg, png, jpeg can uploaded'), false);
       }
       return cb(null, true);
