@@ -184,12 +184,12 @@ export class PostsService {
         return post;
     }
 
-    async createPost(authorId: number, postDTO: CreatePostDto, image?: string) {
+    async createPost(authorId: number, postDTO: CreatePostDto) {
         // create --> db에 맞는 객체 생성
         // save --> db에 create로 생성한 객체 저장
 
         const post = this.postsRepository.create({
-            author: {id: authorId}, ...postDTO, image, likeCount: 0, commentCount: 0,
+            author: {id: authorId}, ...postDTO, likeCount: 0, commentCount: 0,
         });
 
         return await this.postsRepository.save(post);
