@@ -18,3 +18,10 @@ export const POST_IMAGE_PATH = join(PUBLIC_FOLDER_PATH, POSTS_FOLDER_NAME,);
 // http://localhost:3000/public/posts/xxx.jpg 가 아닌
 // /public/posts/xxx.jpg
 export const POST_PUBLIC_IMAGE_PATH = join(PUBLIC_FOLDER_NAME, POSTS_FOLDER_NAME,);
+
+// 임시폴더 이름
+export const TEMP_FOLDER_NAME = 'temp';
+
+// 임시 파일들을 저장할 폴더
+// /{프로젝트 경로}/temp
+export const TEMP_FOLDER_PATH = join(PUBLIC_FOLDER_PATH, TEMP_FOLDER_NAME,);
