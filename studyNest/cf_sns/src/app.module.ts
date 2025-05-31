@@ -5,6 +5,7 @@ import {PostsModule} from './posts/posts.module';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {PostsModel} from './posts/entities/posts.entity';
 import {UsersModel} from "./users/entities/users.entity";
+import {ImageModel} from "./common/entities/image.entity";
 import {UsersModule} from "./users/users.module";
 import {AuthModule} from './auth/auth.module';
 import {CommonModule} from './common/common.module';
@@ -32,7 +33,8 @@ import {PUBLIC_FOLDER_PATH} from "./common/const/path.const";
         database: process.env[ENV_DB_DATABASE_KEY],
         entities: [
             PostsModel,
-            UsersModel
+            UsersModel,
+            ImageModel,
         ], // db 연결될 모델들
         synchronize: true,  // nestjs와 db의 데이터구조 sync맞쳐줌. 개발환경에서는 true가 좋지만 실제환경에서는 false로 해주어야함. 무슨타입이 올지 모르기때문.
 
