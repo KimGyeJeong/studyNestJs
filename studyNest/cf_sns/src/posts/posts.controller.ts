@@ -19,11 +19,14 @@ import {UpdatePostDto} from "./dto/update-post.dto";
 import {PaginatePostDto} from "./dto/paginate_post.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {ImageModelType} from "../common/entities/image.entity";
+import {DataSource} from "typeorm";
 
 
 @Controller('posts')
 export class PostsController {
-    constructor(private readonly postsService: PostsService) {
+    constructor(private readonly postsService: PostsService,
+                private readonly dataSource: DataSource,
+                ) {
     }
 
     // 1) GET /posts
@@ -60,15 +63,41 @@ export class PostsController {
         // @Body('content') content: string,
         @Body() body: CreatePostDto,
     ) {
-        const post = await this.postsService.createPost(userId, body);
+        
+        // 트랜잭션과 관련된 모든 쿼리를 담당할
+        // 쿼리 러너를 생성함.
+        const qr = this.dataSource.createQueryRunner();
+        
+        // 쿼리 러너에 연결한다.
+        await qr.connect();
+        
+        // 쿼리 러너에서 트랜잭션을 시작한다.
+        //이 시점부터 같은 쿼리 러너를 사용하면
+        //트랜잭션 안에서 데이터베이스 액션을 실행할 수 있음.
+        await qr.startTransaction();
+        
+        // 이제 로직을 실행.
+        try{
+            const post = await this.postsService.createPost(userId, body);
 
-        for (let i = 0; i < body.images.length; i++) {
+            for (let i = 0; i < body.images.length; i++) {
 
-            await this.postsService.createPostImage({
-                post, order: i, path: body.images[i], type: ImageModelType.POST_IMAGE
-            });
+                await this.postsService.createPostImage({
+                    post, order: i, path: body.images[i], type: ImageModelType.POST_IMAGE
+                });
+            }
+            
+            await qr.commitTransaction();
+            await qr.release();
+
+            return this.postsService.getPostById(post.id);
+        }catch (err){
+            // 어떤 에러든 에러가 던져지면
+            //트랜잭션을 종료하고 원래 상태로 되돌린다.
+            await qr.rollbackTransaction();
+            await qr.release();
         }
-        return this.postsService.getPostById(post.id);
+        
     }
 
     // 4) Patch /posts/:id

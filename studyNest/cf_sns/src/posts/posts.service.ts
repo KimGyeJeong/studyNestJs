@@ -1,5 +1,5 @@
 import {BadRequestException, Injectable, NotFoundException} from '@nestjs/common';
-import {FindOptionsWhere, LessThan, MoreThan, Repository} from 'typeorm';
+import {FindOptionsWhere, LessThan, MoreThan, QueryRunner, Repository} from 'typeorm';
 import {InjectRepository} from '@nestjs/typeorm';
 import {PostsModel} from './entities/posts.entity';
 import {CreatePostDto} from "./dto/create-post.dto";
@@ -158,16 +158,22 @@ export class PostsService {
         }
         return post;
     }
+    
+    getRepository(qr?: QueryRunner) {
+        return qr ? qr.manager.getRepository<PostsModel>(PostsModel) : this.postsRepository;
+    }
 
-    async createPost(authorId: number, postDTO: CreatePostDto) {
+    async createPost(authorId: number, postDTO: CreatePostDto, qr?: QueryRunner) {
         // create --> db에 맞는 객체 생성
         // save --> db에 create로 생성한 객체 저장
+        
+        const repository = this.getRepository(qr);
 
-        const post = this.postsRepository.create({
+        const post = repository.create({
             author: {id: authorId}, ...postDTO, images:[], likeCount: 0, commentCount: 0,
         });
 
-        return await this.postsRepository.save(post);
+        return await repository.save(post);
     }
 
     async updatePost(id: number, postDTO: UpdatePostDto) {
