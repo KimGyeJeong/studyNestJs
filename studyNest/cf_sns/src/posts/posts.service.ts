@@ -13,6 +13,7 @@ import {POST_IMAGE_PATH, PUBLIC_FOLDER_PATH, TEMP_FOLDER_PATH} from "../common/c
 import {promises} from 'fs';
 import {CreatePostImageDto} from "./image/dto/create-image.dto";
 import {ImageModel} from "../common/entities/image.entity";
+import {DEFAULT_POST_FIND_OPTIONS} from "./const/default-post-find-options.const";
 
 @Injectable()
 export class PostsService {
@@ -28,7 +29,7 @@ export class PostsService {
 
     async getAllPosts() {
         return await this.postsRepository.find({
-            relations: ['author'],
+            ...DEFAULT_POST_FIND_OPTIONS
         });
     }
 
@@ -50,7 +51,7 @@ export class PostsService {
         //     return this.cursorPaginatePosts(dto)
         // }
         return this.commonService.paginate(dto, this.postsRepository, {
-            relations: ['author', 'images'],
+            ...DEFAULT_POST_FIND_OPTIONS,
         }, 'posts');
 
     }
@@ -147,7 +148,10 @@ export class PostsService {
     }
 
     async getPostById(id: number) {
-        const post = await this.postsRepository.findOne({where: {id}, relations: ['author','images']});
+        const post = await this.postsRepository.findOne({
+            ...DEFAULT_POST_FIND_OPTIONS,
+            where: {id},
+        });
 
         if (!post) {
             throw new NotFoundException();
