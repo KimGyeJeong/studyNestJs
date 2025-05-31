@@ -11,49 +11,16 @@ import {ENV_HOST_KEY, ENV_PROTOCOL_KEY} from "../common/const/env-keys.const";
 import {join, basename} from "path";
 import {POST_IMAGE_PATH, PUBLIC_FOLDER_PATH, TEMP_FOLDER_PATH} from "../common/const/path.const";
 import {promises} from 'fs';
-
-export interface PostModel {
-    id: number;
-    author: string;
-    title: string;
-    content: string;
-    likeCount: number;
-    commentCount: number;
-}
-
-let posts: PostModel[] = [
-    {
-        id: 1,
-        author: '작가1',
-        title: '제목1',
-        content: '글1',
-        likeCount: 999,
-        commentCount: 103,
-    },
-    {
-        id: 2,
-        author: '작가2',
-        title: '제목2',
-        content: '글2',
-        likeCount: 994,
-        commentCount: 111,
-    },
-    {
-        id: 3,
-        author: '작가3',
-        title: '제목3',
-        content: '글3',
-        likeCount: 3,
-        commentCount: 23,
-    },
-];
-
+import {CreatePostImageDto} from "./image/dto/create-image.dto";
+import {ImageModel} from "../common/entities/image.entity";
 
 @Injectable()
 export class PostsService {
     constructor(
         @InjectRepository(PostsModel)
         private readonly postsRepository: Repository<PostsModel>,
+        @InjectRepository(ImageModel)
+        private readonly imageRepository: Repository<ImageModel>,
         private readonly commonService: CommonService,
         private readonly configService: ConfigService,
     ) {
@@ -70,6 +37,7 @@ export class PostsService {
             await this.createPost(userId, {
                 title: `sample title ${i}`,
                 content: `sample content ${i}`,
+                images: [],
             });
         }
     }
@@ -82,7 +50,7 @@ export class PostsService {
         //     return this.cursorPaginatePosts(dto)
         // }
         return this.commonService.paginate(dto, this.postsRepository, {
-            relations: ['author'],
+            relations: ['author', 'images'],
         }, 'posts');
 
     }
@@ -179,7 +147,7 @@ export class PostsService {
     }
 
     async getPostById(id: number) {
-        const post = await this.postsRepository.findOne({where: {id}, relations: ['author']});
+        const post = await this.postsRepository.findOne({where: {id}, relations: ['author','images']});
 
         if (!post) {
             throw new NotFoundException();
@@ -192,7 +160,7 @@ export class PostsService {
         // save --> db에 create로 생성한 객체 저장
 
         const post = this.postsRepository.create({
-            author: {id: authorId}, ...postDTO, likeCount: 0, commentCount: 0,
+            author: {id: authorId}, ...postDTO, images:[], likeCount: 0, commentCount: 0,
         });
 
         return await this.postsRepository.save(post);
@@ -233,13 +201,11 @@ export class PostsService {
         return post.id;
     }
     
-    async createPostImage(dto: CreatePostDto) {
+    async createPostImage(dto: CreatePostImageDto) {
         //dto의 이미지 이름을 기반으로
         // 파일의 경로를 생성한다
-        if (!dto.image) {
-            return '';
-        }
-        const tempFilePath = join(TEMP_FOLDER_PATH, dto.image);
+        
+        const tempFilePath = join(TEMP_FOLDER_PATH, dto.path);
 
         try {
             //파일이 존재하는지 확인
@@ -257,9 +223,14 @@ export class PostsService {
         // {프로젝트 경로}/public/posts/asdf.jpg
         const newPath = join(POST_IMAGE_PATH, fileName);
         
+        // 저장
+        const result = await this.imageRepository.save({
+            ...dto, 
+        })
+        
         //파일 옮기기
         await promises.rename(tempFilePath, newPath);
         
-        return true;
+        return result;
     }
 }

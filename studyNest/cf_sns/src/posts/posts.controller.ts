@@ -18,6 +18,7 @@ import {CreatePostDto} from "./dto/create-post.dto";
 import {UpdatePostDto} from "./dto/update-post.dto";
 import {PaginatePostDto} from "./dto/paginate_post.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
+import {ImageModelType} from "../common/entities/image.entity";
 
 
 @Controller('posts')
@@ -59,9 +60,15 @@ export class PostsController {
         // @Body('content') content: string,
         @Body() body: CreatePostDto,
     ) {
-        await this.postsService.createPostImage(body);
-        
-        return this.postsService.createPost(userId, body);
+        const post = await this.postsService.createPost(userId, body);
+
+        for (let i = 0; i < body.images.length; i++) {
+
+            await this.postsService.createPostImage({
+                post, order: i, path: body.images[i], type: ImageModelType.POST_IMAGE
+            });
+        }
+        return this.postsService.getPostById(post.id);
     }
 
     // 4) Patch /posts/:id
