@@ -21,6 +21,7 @@ import {FileInterceptor} from "@nestjs/platform-express";
 import {ImageModelType} from "../common/entities/image.entity";
 import {DataSource} from "typeorm";
 import {PostsImagesService} from "./image/image.service";
+import {LogInterceptor} from "../common/interceptor/log.interceptor";
 
 
 @Controller('posts')
@@ -34,6 +35,7 @@ export class PostsController {
     // 1) GET /posts
     // 모든 post 가져오기
     @Get()
+    @UseInterceptors(LogInterceptor)
     getPosts(@Query() query: PaginatePostDto) {
         // return this.postsService.getAllPosts();
         return this.postsService.paginatePosts(query);
