@@ -68,18 +68,6 @@ export class PostsController {
         @Body() body: CreatePostDto,
     ) {
         
-        // 트랜잭션과 관련된 모든 쿼리를 담당할
-        // 쿼리 러너를 생성함.
-        const qr = this.dataSource.createQueryRunner();
-        
-        // 쿼리 러너에 연결한다.
-        await qr.connect();
-        
-        // 쿼리 러너에서 트랜잭션을 시작한다.
-        //이 시점부터 같은 쿼리 러너를 사용하면
-        //트랜잭션 안에서 데이터베이스 액션을 실행할 수 있음.
-        await qr.startTransaction();
-        
         // 이제 로직을 실행.
         try{
             const post = await this.postsService.createPost(userId, body, qr);
