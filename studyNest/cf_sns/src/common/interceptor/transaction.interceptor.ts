@@ -4,8 +4,9 @@ import {DataSource} from "typeorm";
 
 @Injectable()
 export class TransactionInterceptor implements NestInterceptor {
-    private readonly dataSource: DataSource,
-    constructor() {
+    constructor(
+        private readonly dataSource: DataSource,
+    ) {
     }
     
     async intercept(context: ExecutionContext, next: CallHandler<any>): Promise<Observable<any>> {
