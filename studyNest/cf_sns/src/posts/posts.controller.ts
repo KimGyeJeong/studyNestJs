@@ -7,8 +7,8 @@ import {
     NotFoundException,
     Param,
     ParseIntPipe,
-    Patch,
-    Post, UseGuards, Request, Query, UseInterceptors, UploadedFile, InternalServerErrorException
+    Patch, UseFilters,
+    Post, UseGuards, Request, Query, UseInterceptors, UploadedFile, InternalServerErrorException, BadRequestException
 } from '@nestjs/common';
 import {PostsService} from './posts.service';
 import {AccessTokenGuard} from "src/auth/guard/bearer-token.guard";
@@ -24,6 +24,7 @@ import {PostsImagesService} from "./image/image.service";
 import {LogInterceptor} from "../common/interceptor/log.interceptor";
 import {TransactionInterceptor} from "../common/interceptor/transaction.interceptor";
 import {QueryRunner} from "../common/decorator/query-runner.decorator";
+import {HttpExceptionFilter} from "../common/exception-filter/http.exception-filter";
 
 
 @Controller('posts')
@@ -38,7 +39,12 @@ export class PostsController {
     // 모든 post 가져오기
     @Get()
     @UseInterceptors(LogInterceptor)
+    // @UseFilters(HttpExceptionFilter)
     getPosts(@Query() query: PaginatePostDto) {
+        // 강제 에러 발생
+        // throw new BadRequestException('Test Error');
+        
+        
         // return this.postsService.getAllPosts();
         return this.postsService.paginatePosts(query);
     }
