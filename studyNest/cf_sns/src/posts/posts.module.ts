@@ -16,19 +16,6 @@ import {LogMiddleware} from "../common/middleware/log.middleware";
     imports: [TypeOrmModule.forFeature([PostsModel, ImageModel]), AuthModule, UsersModule, CommonModule,
     ],
 })
-export class PostsModule implements NestModule {
-    configure(consumer: MiddlewareConsumer) {
-        consumer.apply(LogMiddleware).forRoutes({
-            
-            // 실제 경로가 /posts 인 것만 적용
-            // path: 'posts',
-            // posts 이후 모든것
-            path: 'posts*',
-            
-            // 모든 요청  
-            // method: RequestMethod.ALL
-            // Get 요청
-            method: RequestMethod.GET
-        })
-    }
+export class PostsModule {
+
 }

@@ -1,4 +1,4 @@
-import {ClassSerializerInterceptor, Module} from '@nestjs/common';
+import {ClassSerializerInterceptor, MiddlewareConsumer, Module, NestModule, RequestMethod} from '@nestjs/common';
 import {AppController} from './app.controller';
 import {AppService} from './app.service';
 import {PostsModule} from './posts/posts.module';
@@ -21,6 +21,7 @@ import {
 } from "./common/const/env-keys.const";
 import {ServeStaticModule} from "@nestjs/serve-static";
 import {PUBLIC_FOLDER_PATH} from "./common/const/path.const";
+import {LogMiddleware} from "./common/middleware/log.middleware";
 
 @Module({
     imports: [PostsModule, ServeStaticModule.forRoot({rootPath:PUBLIC_FOLDER_PATH, serveRoot:'/public'}), ConfigModule.forRoot({envFilePath: '.env', isGlobal: true}),
@@ -42,5 +43,16 @@ import {PUBLIC_FOLDER_PATH} from "./common/const/path.const";
     controllers: [AppController],
     providers: [AppService, {provide: APP_INTERCEPTOR, useClass: ClassSerializerInterceptor}],
 })
-export class AppModule {
+export class AppModule implements NestModule{
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(LogMiddleware).forRoutes({
+            // 모든 경로의 요청
+            path: '*',
+
+            // 모든 요청  
+            method: RequestMethod.ALL
+            // Get 요청
+            // method: RequestMethod.GET
+        })
+    }
 }
