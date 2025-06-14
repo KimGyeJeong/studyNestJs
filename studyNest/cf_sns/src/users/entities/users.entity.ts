@@ -16,6 +16,7 @@ import {stringValidationMessage} from "../../common/validation-message/string-va
 import {emailValidationMessage} from "../../common/validation-message/email-validation.message";
 import {Exclude, Expose} from "class-transformer";
 import {ChatsModel} from "../../chats/entity/chats.entity";
+import {MessagesModel} from "../../chats/messages/entity/messages.entity";
 
 @Entity()
 // @Exclude()  // class가 보안에 중요하다면 클래스 전체에 exclude 를 할수 있다(기본적으로 전체 expose). 필요한 항목에 대해서만 expose 데코레이터를 사용하면 된다.
@@ -76,4 +77,7 @@ export class UsersModel extends BaseModel {
     @ManyToMany(() => ChatsModel, (chat) => chat.users)
     @JoinTable()    // jointable이 선언된 곳이 관계의 주인이 됨. 이때 usersmodel이 연결테이블을 생성하고 관리함
     chats: ChatsModel[];
+    
+    @OneToMany(()=> MessagesModel, (message) => message.author)
+    messages: MessagesModel[];
 }
