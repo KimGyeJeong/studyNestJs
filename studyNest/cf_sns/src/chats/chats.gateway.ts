@@ -29,7 +29,11 @@ export class ChatsGateway implements OnGatewayConnection {
         console.log('message:', message);
         console.log('chatId:', message?.chatId);
 
-        this.server.in(message.chatId.toString()).emit('receive_message', message.message);
+        // socket 전부
+        // this.server.in(message.chatId.toString()).emit('receive_message', message.message);
+        
+        // 나를 제외한 socket
+        socket.to(message.chatId.toString()).emit("receive_message", message.message);
     }
 
     @SubscribeMessage('enter_chat')
