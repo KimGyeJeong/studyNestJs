@@ -6,12 +6,20 @@ import {
     WebSocketGateway, WebSocketServer
 } from "@nestjs/websockets";
 import {Socket, Server} from "socket.io";
+import {CreateChatDto} from "./dto/create-chat.dto";
+import {ChatsService} from "./chats.service";
 
 @WebSocketGateway({
     // ws://localhost:3000/chats
     namespace: 'chats',
 })
 export class ChatsGateway implements OnGatewayConnection {
+    constructor(
+        private readonly chatsService: ChatsService,
+    ) {
+
+    }
+
     @WebSocketServer()
     server: Server;
 
@@ -31,7 +39,7 @@ export class ChatsGateway implements OnGatewayConnection {
 
         // socket 전부
         // this.server.in(message.chatId.toString()).emit('receive_message', message.message);
-        
+
         // 나를 제외한 socket
         socket.to(message.chatId.toString()).emit("receive_message", message.message);
     }
@@ -54,7 +62,7 @@ export class ChatsGateway implements OnGatewayConnection {
         //       'V5S9vCHTtG2V1Yd4AAAF' => [Set],
         //       '1' => [Set]
         //     },
-        
+
         // rooms: Map(5) {
         //   '2' => Set { 'wZzyvD6bUqYIFQCkAAAB', 'FYwod2ThyIN5a5u1AAAD', 'V5S9vCHTtG2V1Yd4AAAF' },
         //   // ...
@@ -73,8 +81,16 @@ export class ChatsGateway implements OnGatewayConnection {
         // } else {
         //     console.log(`Room [${roomName}] does not exist.`);
         // }
-        
+
         // 전체 방 + 소켓
         // this.server.sockets.adapter.rooms
+    }
+
+    @SubscribeMessage('create_chat')
+    async createChat(
+        @MessageBody() data: CreateChatDto,
+        @ConnectedSocket() socket: Socket
+    ) {
+        const chat = await this.chatsService.createChat(data);
     }
 }
