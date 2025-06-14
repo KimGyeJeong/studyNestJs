@@ -3,12 +3,15 @@ import {ChatsModel} from "./entity/chats.entity";
 import {CreateChatDto} from "./dto/create-chat.dto";
 import {Repository} from "typeorm";
 import {InjectRepository} from "@nestjs/typeorm";
+import {PaginateChatDto} from "./dto/paginate-chat.dto";
+import {CommonService} from "../common/common.service";
 
 @Injectable()
 export class ChatsService {
     constructor(
         @InjectRepository(ChatsModel)
         private readonly chatsRepository: Repository<ChatsModel>,
+        private readonly commonservice: CommonService,
     ) {
     }
 
@@ -24,6 +27,13 @@ export class ChatsService {
                 id: chat.id,
             }
         });
+    }
+
+
+    paginateChats(dto: PaginateChatDto) {
+        return this.commonservice.paginate(dto, this.chatsRepository, {
+            relations: {users: true}
+        }, 'chats',);
     }
 
 }

@@ -8,6 +8,7 @@ import {
 import {Socket, Server} from "socket.io";
 import {CreateChatDto} from "./dto/create-chat.dto";
 import {ChatsService} from "./chats.service";
+import { CommonService } from "src/common/common.service";
 
 @WebSocketGateway({
     // ws://localhost:3000/chats
