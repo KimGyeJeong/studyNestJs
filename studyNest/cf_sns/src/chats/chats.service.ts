@@ -29,11 +29,16 @@ export class ChatsService {
         });
     }
 
-
     paginateChats(dto: PaginateChatDto) {
         return this.commonservice.paginate(dto, this.chatsRepository, {
             relations: {users: true}
         }, 'chats',);
+    }
+
+    async checkIfChatExists(chatId: number) {
+        return await this.chatsRepository.exists({
+            where: {id: chatId},
+        });
     }
 
 }
