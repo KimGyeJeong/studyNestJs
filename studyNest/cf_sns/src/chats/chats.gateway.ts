@@ -12,7 +12,8 @@ import {CommonService} from "src/common/common.service";
 import {EnterChatDto} from "./dto/enter-chat.dto";
 import {CreateMessagesDTO} from "./messages/dto/create-messages.dto";
 import {ChatsMessagesService} from "./messages/messages.service";
-import {UsePipes, ValidationPipe} from "@nestjs/common";
+import {UseFilters, UsePipes, ValidationPipe} from "@nestjs/common";
+import {SocketCatchHttpExceptionFilter} from "../common/exception-filter/socket-catch-http.exception-filter";
 
 @WebSocketGateway({
     // ws://localhost:3000/chats
@@ -122,6 +123,7 @@ export class ChatsGateway implements OnGatewayConnection {
         whitelist: true,
         forbidNonWhitelisted: true, // 존재하지 않는 값이면 400 에러를 발생시킴
     }))
+    @UseFilters(SocketCatchHttpExceptionFilter)
     @SubscribeMessage('create_chat')
     async createChat(
         @MessageBody() data: CreateChatDto,
