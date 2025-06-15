@@ -12,6 +12,7 @@ import {CommonService} from "src/common/common.service";
 import {EnterChatDto} from "./dto/enter-chat.dto";
 import {CreateMessagesDTO} from "./messages/dto/create-messages.dto";
 import {ChatsMessagesService} from "./messages/messages.service";
+import {UsePipes, ValidationPipe} from "@nestjs/common";
 
 @WebSocketGateway({
     // ws://localhost:3000/chats
@@ -113,6 +114,14 @@ export class ChatsGateway implements OnGatewayConnection {
         // this.server.sockets.adapter.rooms
     }
 
+    @UsePipes(new ValidationPipe({
+        transform: true,
+        transformOptions : {
+            enableImplicitConversion : true // classValidator 기반으로 number등의 형식으로 데코레이터를 통과시켜줌. @Type(()=>Number) 를 사용하지 않아도 원하는대로 작동함
+        },
+        whitelist: true,
+        forbidNonWhitelisted: true, // 존재하지 않는 값이면 400 에러를 발생시킴
+    }))
     @SubscribeMessage('create_chat')
     async createChat(
         @MessageBody() data: CreateChatDto,
