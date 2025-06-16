@@ -38,8 +38,18 @@ export class ChatsGateway implements OnGatewayConnection {
 
     // socket.on("send_message", (message) => {console.log(message) } );
     @SubscribeMessage('send_message')
+    @UsePipes(new ValidationPipe({
+        transform: true,
+        transformOptions : {
+            enableImplicitConversion : true // classValidator 기반으로 number등의 형식으로 데코레이터를 통과시켜줌. @Type(()=>Number) 를 사용하지 않아도 원하는대로 작동함
+        },
+        whitelist: true,
+        forbidNonWhitelisted: true, // 존재하지 않는 값이면 400 에러를 발생시킴
+    }))
+    @UseFilters(SocketCatchHttpExceptionFilter)
+    @UseGuards(SocketBearerTokenGuard)
     async sendMessage(@MessageBody() dto: CreateMessagesDTO,
-                      @ConnectedSocket() socket: Socket
+                      @ConnectedSocket() socket: Socket & {user: UsersModel}
     ) {
         const chatExists = await this.chatsService.checkIfChatExists(
             dto.chatId,
@@ -51,7 +61,7 @@ export class ChatsGateway implements OnGatewayConnection {
             );
         }
 
-        const message = await this.messagesService.createMessage(dto);
+        const message = await this.messagesService.createMessage(dto, socket.user.id);
         
         if (!message) {
             throw new WsException(`cant create message`);
@@ -68,6 +78,16 @@ export class ChatsGateway implements OnGatewayConnection {
     }
 
     @SubscribeMessage('enter_chat')
+    @UsePipes(new ValidationPipe({
+        transform: true,
+        transformOptions : {
+            enableImplicitConversion : true // classValidator 기반으로 number등의 형식으로 데코레이터를 통과시켜줌. @Type(()=>Number) 를 사용하지 않아도 원하는대로 작동함
+        },
+        whitelist: true,
+        forbidNonWhitelisted: true, // 존재하지 않는 값이면 400 에러를 발생시킴
+    }))
+    @UseFilters(SocketCatchHttpExceptionFilter)
+    @UseGuards(SocketBearerTokenGuard)
     async enterChat(
         // 방의 chat ID들을 리스트로 받음
         @MessageBody() data: EnterChatDto,
@@ -116,7 +136,8 @@ export class ChatsGateway implements OnGatewayConnection {
         // 전체 방 + 소켓
         // this.server.sockets.adapter.rooms
     }
-
+    
+    @SubscribeMessage('create_chat')
     @UsePipes(new ValidationPipe({
         transform: true,
         transformOptions : {
@@ -127,7 +148,6 @@ export class ChatsGateway implements OnGatewayConnection {
     }))
     @UseFilters(SocketCatchHttpExceptionFilter)
     @UseGuards(SocketBearerTokenGuard)
-    @SubscribeMessage('create_chat')
     async createChat(
         @MessageBody() data: CreateChatDto,
         @ConnectedSocket() socket: Socket & {user: UsersModel}
