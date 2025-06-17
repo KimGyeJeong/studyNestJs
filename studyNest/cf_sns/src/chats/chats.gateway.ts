@@ -16,6 +16,8 @@ import {UseFilters, UseGuards, UsePipes, ValidationPipe} from "@nestjs/common";
 import {SocketCatchHttpExceptionFilter} from "../common/exception-filter/socket-catch-http.exception-filter";
 import {SocketBearerTokenGuard} from "../auth/guard/socket/socket-bearer-token.guard";
 import {UsersModel} from "../users/entities/users.entity";
+import {UsersService} from "../users/users.service";
+import {AuthService} from "../auth/auth.service";
 
 @WebSocketGateway({
     // ws://localhost:3000/chats
@@ -25,6 +27,8 @@ export class ChatsGateway implements OnGatewayConnection {
     constructor(
         private readonly chatsService: ChatsService,
         private readonly messagesService: ChatsMessagesService,
+        private readonly usersService: UsersService,
+        private readonly authService: AuthService
     ) {
 
     }
@@ -32,8 +36,34 @@ export class ChatsGateway implements OnGatewayConnection {
     @WebSocketServer()
     server: Server;
 
-    handleConnection(socket: Socket,) {
+    async handleConnection(socket: Socket & {user: UsersModel},) {
         console.log(`on Connect Called : ${socket.id}`);
+
+        const headers = socket.handshake.headers;
+
+        // Bearer xxx
+        const rawToken = headers['authorization'];
+
+        if (!rawToken) {
+            socket.disconnect();
+        }
+
+        try{
+            const token = this.authService.extractTokenFromHeader(<string>rawToken, true);
+
+            const payload = this.authService.verifyToken(token);
+
+            const user = await this.usersService.getUserByEmail(payload.email);
+
+            if (user) {
+                socket.user = user;
+                console.log('user: ', user);
+            }
+
+            return true;
+        }catch(error){
+            socket.disconnect();
+        }
     }
 
     // socket.on("send_message", (message) => {console.log(message) } );
@@ -47,7 +77,6 @@ export class ChatsGateway implements OnGatewayConnection {
         forbidNonWhitelisted: true, // 존재하지 않는 값이면 400 에러를 발생시킴
     }))
     @UseFilters(SocketCatchHttpExceptionFilter)
-    @UseGuards(SocketBearerTokenGuard)
     async sendMessage(@MessageBody() dto: CreateMessagesDTO,
                       @ConnectedSocket() socket: Socket & {user: UsersModel}
     ) {
@@ -87,11 +116,10 @@ export class ChatsGateway implements OnGatewayConnection {
         forbidNonWhitelisted: true, // 존재하지 않는 값이면 400 에러를 발생시킴
     }))
     @UseFilters(SocketCatchHttpExceptionFilter)
-    @UseGuards(SocketBearerTokenGuard)
     async enterChat(
         // 방의 chat ID들을 리스트로 받음
         @MessageBody() data: EnterChatDto,
-        @ConnectedSocket() socket: Socket,
+        @ConnectedSocket() socket: Socket & {user: UsersModel},
     ) {
         for (const chatId of data.chatIds) {
             const exists = await this.chatsService.checkIfChatExists(chatId);
@@ -147,7 +175,6 @@ export class ChatsGateway implements OnGatewayConnection {
         forbidNonWhitelisted: true, // 존재하지 않는 값이면 400 에러를 발생시킴
     }))
     @UseFilters(SocketCatchHttpExceptionFilter)
-    @UseGuards(SocketBearerTokenGuard)
     async createChat(
         @MessageBody() data: CreateChatDto,
         @ConnectedSocket() socket: Socket & {user: UsersModel}
