@@ -1,7 +1,7 @@
 import {
     ConnectedSocket,
     MessageBody,
-    OnGatewayConnection,
+    OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit,
     SubscribeMessage,
     WebSocketGateway, WebSocketServer, WsException
 } from "@nestjs/websockets";
@@ -23,7 +23,7 @@ import {AuthService} from "../auth/auth.service";
     // ws://localhost:3000/chats
     namespace: 'chats',
 })
-export class ChatsGateway implements OnGatewayConnection {
+export class ChatsGateway implements OnGatewayConnection, OnGatewayInit, OnGatewayDisconnect {
     constructor(
         private readonly chatsService: ChatsService,
         private readonly messagesService: ChatsMessagesService,
@@ -31,6 +31,18 @@ export class ChatsGateway implements OnGatewayConnection {
         private readonly authService: AuthService
     ) {
 
+    }
+
+    handleDisconnect(socket: Socket) {
+        //ws 연결이 disconnect 될때 실행 됨
+        console.log(`on disconnect: ${socket.id}`);
+    }
+
+    afterInit(server: any) {
+        // server를 inject 시에 사용되는 함수이기도 함
+        // gateway가 초기화 되었을때 실행
+        
+        // afterInit(server.. 의 server 는 @WebSocketServer() server: Server; 의 server와 동일하다
     }
 
     @WebSocketServer()
