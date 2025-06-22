@@ -26,6 +26,7 @@ import { ChatsModule } from './chats/chats.module';
 import {ChatsModel} from "./chats/entity/chats.entity";
 import {MessagesModel} from "./chats/messages/entity/messages.entity";
 import { CommentsModule } from './posts/comments/comments.module';
+import {CommentsModel} from "./posts/comments/entity/comments.entity";
 
 @Module({
     imports: [PostsModule, ServeStaticModule.forRoot({rootPath:PUBLIC_FOLDER_PATH, serveRoot:'/public'}), ConfigModule.forRoot({envFilePath: '.env', isGlobal: true}),
@@ -42,6 +43,7 @@ import { CommentsModule } from './posts/comments/comments.module';
             ImageModel,
             ChatsModel,
             MessagesModel,
+            CommentsModel
         ], // db 연결될 모델들
         synchronize: true,  // nestjs와 db의 데이터구조 sync맞쳐줌. 개발환경에서는 true가 좋지만 실제환경에서는 false로 해주어야함. 무슨타입이 올지 모르기때문.
 

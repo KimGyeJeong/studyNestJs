@@ -21,5 +21,7 @@ export class CommentsController {
      * 5) Patch(':commentId') 특정 comment 업데이트 하는 기능
      * 6) Delete(':commentId') 특정 comment 삭제하는 기능
      */
+    
+    
   }
 }

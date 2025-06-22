@@ -15,6 +15,7 @@ import {Transform} from "class-transformer";
 import {join} from "path";
 import {POST_PUBLIC_IMAGE_PATH} from "../../common/const/path.const";
 import {ImageModel} from "../../common/entity/image.entity";
+import {CommentsModel} from "../comments/entity/comments.entity";
 
 @Entity()
 export class PostsModel extends BaseModel {
@@ -46,4 +47,7 @@ export class PostsModel extends BaseModel {
     
     @OneToMany((type) => ImageModel, (image) => image.post)
     images: ImageModel[]
+    
+    @OneToMany(() => CommentsModel, (comment) => comment.post)
+    comments: CommentsModel[];
 }
