@@ -1,6 +1,6 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
 import {BasePaginationDto} from "./dto/base-pagination.dto";
-import {BaseModel} from "./entities/base.entity";
+import {BaseModel} from "./entity/base.entity";
 import {FindManyOptions, FindOptionsOrder, FindOptionsWhere, Repository} from "typeorm";
 import {FILTER_MAPPER} from "./const/filter-mapper.const";
 import {ConfigService} from "@nestjs/config";

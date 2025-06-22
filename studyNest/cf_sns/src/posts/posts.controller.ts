@@ -13,12 +13,12 @@ import {
 import {PostsService} from './posts.service';
 import {AccessTokenGuard} from "src/auth/guard/bearer-token.guard";
 import {User} from "src/users/decorator/user.decorator";
-import {UsersModel} from "../users/entities/users.entity";
+import {UsersModel} from "../users/entity/users.entity";
 import {CreatePostDto} from "./dto/create-post.dto";
 import {UpdatePostDto} from "./dto/update-post.dto";
 import {PaginatePostDto} from "./dto/paginate_post.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
-import {ImageModelType} from "../common/entities/image.entity";
+import {ImageModelType} from "../common/entity/image.entity";
 import {DataSource, QueryRunner as QR} from "typeorm";
 import {PostsImagesService} from "./image/image.service";
 import {LogInterceptor} from "../common/interceptor/log.interceptor";

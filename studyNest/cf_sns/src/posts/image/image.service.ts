@@ -1,6 +1,6 @@
 import {BadRequestException, Injectable} from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
-import {ImageModel} from "../../common/entities/image.entity";
+import {ImageModel} from "../../common/entity/image.entity";
 import {QueryRunner, Repository} from "typeorm";
 import {basename, join} from "path";
 import {POST_IMAGE_PATH, TEMP_FOLDER_PATH} from "../../common/const/path.const";
