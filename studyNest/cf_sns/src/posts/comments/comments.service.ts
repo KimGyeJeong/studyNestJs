@@ -6,6 +6,7 @@ import {CommentsModel} from "./entity/comments.entity";
 import {Repository} from "typeorm";
 import {CreateCommentsDto} from "./dto/create-comments.dto";
 import {UsersModel} from "../../users/entity/users.entity";
+import {DEFAULT_POST_FIND_OPTIONS} from "./const/default-comment-find-options.const";
 
 @Injectable()
 export class CommentsService {
@@ -22,16 +23,16 @@ export class CommentsService {
     ) {
         return this.commonService.paginate(
             dto, this.commentsRepository, {
-                relations: {author: true,},
-                where: {post: {id: postId}}
+                ...DEFAULT_POST_FIND_OPTIONS,
+                where: {post: {id: postId}},
             }, `posts/${postId}/comments`
         );
     }
 
     async getCommentById(id: number) {
         const comment = await this.commentsRepository.findOne({
+            ...DEFAULT_POST_FIND_OPTIONS,
             where: {id},
-            relations: {author: true}
         })
 
         if (!comment) {
