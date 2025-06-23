@@ -58,15 +58,30 @@ export class CommentsService {
             id: commentId,
             ...dto,
         });
-        
+
         if (!prevComment) {
             throw new BadRequestException(`id: ${commentId} not found`);
         }
-        
-        const newComment = await this.commentsRepository.save(
+
+        return await this.commentsRepository.save(
             prevComment,
         );
-        
-        return newComment;
+    }
+
+    async deleteComment(id: number) {
+
+        const comment = await this.commentsRepository.findOne({
+            where: {id}
+        });
+
+        if (!comment) {
+            throw new BadRequestException(`id: comment ${id} not found`);
+        }
+
+        await this.commentsRepository.delete({
+            id
+        });
+
+        return id;
     }
 }
