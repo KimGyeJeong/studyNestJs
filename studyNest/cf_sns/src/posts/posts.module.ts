@@ -15,6 +15,7 @@ import {LogMiddleware} from "../common/middleware/log.middleware";
     providers: [PostsService, PostsImagesService],
     imports: [TypeOrmModule.forFeature([PostsModel, ImageModel]), AuthModule, UsersModule, CommonModule,
     ],
+    exports: [PostsService],
 })
 export class PostsModule {
 

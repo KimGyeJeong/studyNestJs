@@ -6,15 +6,19 @@ import {PostsService} from "../../posts.service";
 export class PostExistsMiddleware implements NestMiddleware {
     constructor(private readonly postsService: PostsService) {
     }
-    
-    use(req: Request, res: Response, next: NextFunction) {
+
+    async use(req: Request, res: Response, next: NextFunction) {
         const postId = req.params.postId;
+
+        console.log(`postId: ${postId}`);
         
         if (!postId) {
             throw new BadRequestException("PostId must be provided");
         }
         
-        const exists = this.postsService.checkPostExistsIsById(parseInt(postId));
+        const exists = await this.postsService.checkPostExistsIsById(parseInt(postId));
+
+        console.log('exists: ',exists);
         
         if (!exists) {
             throw new NotFoundException("PostId not found");
