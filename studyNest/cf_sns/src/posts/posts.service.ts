@@ -149,7 +149,7 @@ export class PostsService {
 
     async getPostById(id: number, qr?: QueryRunner) {
         const repository = this.getRepository(qr);
-        
+
         const post = await repository.findOne({
             ...DEFAULT_POST_FIND_OPTIONS,
             where: {id},
@@ -160,7 +160,7 @@ export class PostsService {
         }
         return post;
     }
-    
+
     getRepository(qr?: QueryRunner) {
         return qr ? qr.manager.getRepository<PostsModel>(PostsModel) : this.postsRepository;
     }
@@ -168,11 +168,11 @@ export class PostsService {
     async createPost(authorId: number, postDTO: CreatePostDto, qr?: QueryRunner) {
         // create --> db에 맞는 객체 생성
         // save --> db에 create로 생성한 객체 저장
-        
+
         const repository = this.getRepository(qr);
 
         const post = repository.create({
-            author: {id: authorId}, ...postDTO, images:[], likeCount: 0, commentCount: 0,
+            author: {id: authorId}, ...postDTO, images: [], likeCount: 0, commentCount: 0,
         });
 
         return await repository.save(post);
@@ -212,5 +212,8 @@ export class PostsService {
 
         return post.id;
     }
-    
+
+    async checkPostExistsIsById(id: number) {
+        return this.postsRepository.exists({where: {id}});
+    }
 }
