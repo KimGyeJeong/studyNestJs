@@ -106,6 +106,8 @@ export class PostsController {
     // 5) DELETE /posts/:id
     // post 삭제
     @Delete(':id')
+    @UseGuards(AccessTokenGuard)    // 사용자 정보를 req 에 저장. 그 후 roles 를  비교할수 있게 해줌
+    @Roles(RolesEnum.ADMIN) // 역할이 admin 인 경우에만 삭제 가능
     deletePost(
         @Param('id', ParseIntPipe) id: number,
     ) {
@@ -121,5 +123,7 @@ export class PostsController {
 
         return true;
     }
+    
+    // RBAC--> Role-Based Access Control
 
 }
