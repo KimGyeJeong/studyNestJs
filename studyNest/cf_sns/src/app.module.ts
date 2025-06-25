@@ -28,6 +28,7 @@ import {MessagesModel} from "./chats/messages/entity/messages.entity";
 import {CommentsModule} from './posts/comments/comments.module';
 import {CommentsModel} from "./posts/comments/entity/comments.entity";
 import {RolesGuard} from "./users/guard/roles.guard";
+import {AccessTokenGuard} from "./auth/guard/bearer-token.guard";
 
 @Module({
     imports: [PostsModule, ServeStaticModule.forRoot({
@@ -55,6 +56,7 @@ import {RolesGuard} from "./users/guard/roles.guard";
     controllers: [AppController],
     providers: [AppService,
         {provide: APP_INTERCEPTOR, useClass: ClassSerializerInterceptor},
+        {provide: APP_GUARD, useClass: AccessTokenGuard},   // role 비교하기 전에 accesstokenguard 로 role 을 넣어주어야 함.
         {provide: APP_GUARD, useClass: RolesGuard},
     ],
 })

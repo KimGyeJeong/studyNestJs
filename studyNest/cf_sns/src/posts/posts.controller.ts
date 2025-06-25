@@ -27,6 +27,7 @@ import {QueryRunner} from "../common/decorator/query-runner.decorator";
 import {HttpExceptionFilter} from "../common/exception-filter/http.exception-filter";
 import {Roles} from "../users/decorator/roles.decorator";
 import {RolesEnum} from "../users/const/roles.const";
+import {IsPublic} from "../common/decorator/is-public.decorator";
 
 
 @Controller('posts')
@@ -40,6 +41,7 @@ export class PostsController {
     // 1) GET /posts
     // 모든 post 가져오기
     @Get()
+    @IsPublic()
     @UseInterceptors(LogInterceptor)
     // @UseFilters(HttpExceptionFilter)
     getPosts(@Query() query: PaginatePostDto) {
@@ -54,6 +56,7 @@ export class PostsController {
     // 2) GET /posts/:id
     // id에 해당하는 post 가져오기.
     @Get(':id')
+    @IsPublic()
     getPost(@Param('id', ParseIntPipe) id: number) {
         return this.postsService.getPostById(id);
     }
