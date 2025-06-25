@@ -1,5 +1,7 @@
 import {Body, ClassSerializerInterceptor, Controller, Get, Post, UseInterceptors} from '@nestjs/common';
 import { UsersService } from './users.service';
+import {RolesEnum} from "./const/roles.const";
+import {Roles} from "./decorator/roles.decorator";
 
 @Controller('users')
 export class UsersController {
@@ -13,6 +15,7 @@ export class UsersController {
   // }
   
   @Get()
+  @Roles(RolesEnum.ADMIN)
   // appModule에서 사용
   // @UseInterceptors(ClassSerializerInterceptor)
   /**
