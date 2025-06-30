@@ -10,16 +10,12 @@ export class PostExistsMiddleware implements NestMiddleware {
     async use(req: Request, res: Response, next: NextFunction) {
         const postId = req.params.postId;
 
-        console.log(`postId: ${postId}`);
-        
         if (!postId) {
             throw new BadRequestException("PostId must be provided");
         }
         
         const exists = await this.postsService.checkPostExistsIsById(parseInt(postId));
 
-        console.log('exists: ',exists);
-        
         if (!exists) {
             throw new NotFoundException("PostId not found");
         }
