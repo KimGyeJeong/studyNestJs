@@ -1,4 +1,11 @@
-import {BadRequestException, CanActivate, ExecutionContext, Injectable, UnauthorizedException} from "@nestjs/common";
+import {
+    BadRequestException,
+    CanActivate,
+    ExecutionContext,
+    ForbiddenException,
+    Injectable,
+    UnauthorizedException
+} from "@nestjs/common";
 import {RolesEnum} from "../../users/const/roles.const";
 import {PostsService} from "../posts.service";
 import {UsersModel} from "../../users/entity/users.entity";
@@ -35,6 +42,12 @@ export class IsPostMineOrAdminGuard implements CanActivate {
         }
 
 
-        return this.postsService.isPostMine(user.id, parseInt(postId));
+        const isMine = await this.postsService.isPostMine(user.id, parseInt(postId));
+        
+        if (!isMine){
+            throw new ForbiddenException(`no authenticated post id ${postId}`);
+        }
+        
+        return true;
     }
 }

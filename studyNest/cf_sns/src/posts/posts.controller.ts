@@ -28,6 +28,7 @@ import {HttpExceptionFilter} from "../common/exception-filter/http.exception-fil
 import {Roles} from "../users/decorator/roles.decorator";
 import {RolesEnum} from "../users/const/roles.const";
 import {IsPublic} from "../common/decorator/is-public.decorator";
+import {IsPostMineOrAdminGuard} from "./guards/is-post-mine-or-admin.guard";
 
 
 @Controller('posts')
@@ -95,16 +96,17 @@ export class PostsController {
         return await this.postsService.getPostById(post.id, qr);
     }
 
-    // 4) Patch /posts/:id
+    // 4) Patch /posts/:postId
     // post 수정
-    @Patch(':id')
+    @Patch(':postId')
+    @UseGuards(IsPostMineOrAdminGuard)
     patchPost(
-        @Param('id', ParseIntPipe) id: number,
+        @Param('postId', ParseIntPipe) postId: number,
         // @Body('title') title?: string,
         // @Body('content') content?: string,
         @Body() body: UpdatePostDto
     ) {
-        return this.postsService.updatePost(id, body);
+        return this.postsService.updatePost(postId, body);
     }
 
     // 5) DELETE /posts/:id
