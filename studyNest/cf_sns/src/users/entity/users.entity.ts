@@ -87,6 +87,11 @@ export class UsersModel extends BaseModel {
 
     // People I am following
     @ManyToMany(() => UsersModel, (user) => user.followees)
+    // @JoinTable({
+    //     name: 'user_followers', // 테이블 이름 변경
+    //     joinColumn: { name: 'followerId', referencedColumnName: 'id' }, // 현재 엔티티(UsersModel)의 ID를 참조하는 컬럼 이름
+    //     inverseJoinColumn: { name: 'followeeId', referencedColumnName: 'id' }, // 대상 엔티티(UsersModel)의 ID를 참조하는 컬럼 이름
+    // })
     @JoinTable()
     followers: UsersModel[];
 
