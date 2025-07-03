@@ -33,37 +33,37 @@ export class UsersModel extends BaseModel {
     @Length(1, 20, {
         message: lengthValidationMessage
     })
-    // @Expose()
+        // @Expose()
     nickname: string;
 
     @Column()
     // 1) 유일무이한 값
     @IsString({message: stringValidationMessage})
-    @IsEmail({}, {message:emailValidationMessage})
-    // @Expose()
+    @IsEmail({}, {message: emailValidationMessage})
+        // @Expose()
     email: string;
 
     @Column()
     @IsString({message: stringValidationMessage})
-    @Length(3, 8,{message:lengthValidationMessage})
+    @Length(3, 8, {message: lengthValidationMessage})
     /**
      * Exclude
-     * 
+     *
      * Request
      * frontend --> backend
      * plain object(JSON)--> class instance(dto)
-     * 
+     *
      * Response
      * backend --> frontend
      * class insance(dto) --> plain object(JSON)
-     * 
+     *
      * Option
      * - toClassOnly: class instance 변환될때 (Request)
      * - toPlainOnly: plain Object로 변환될때 (Response)
-     * 
+     *
      * option 을 적용하지 않으면 기본으로 둘다 적용
      */
-    @Exclude({toPlainOnly:true})    // Response 할때에만 제외시킴
+    @Exclude({toPlainOnly: true})    // Response 할때에만 제외시킴
     password: string;
 
     @Column({
@@ -74,14 +74,23 @@ export class UsersModel extends BaseModel {
 
     @OneToMany(() => PostsModel, (post) => post.author)
     posts: PostsModel[];
-    
+
     @ManyToMany(() => ChatsModel, (chat) => chat.users)
     @JoinTable()    // jointable이 선언된 곳이 관계의 주인이 됨. 이때 usersmodel이 연결테이블을 생성하고 관리함
     chats: ChatsModel[];
-    
-    @OneToMany(()=> MessagesModel, (message) => message.author)
+
+    @OneToMany(() => MessagesModel, (message) => message.author)
     messages: MessagesModel[];
-    
+
     @OneToMany(() => CommentsModel, (comment) => comment.author)
     postComments: CommentsModel[]
+
+    // People I am following
+    @ManyToMany(() => UsersModel, (user) => user.followees)
+    @JoinTable()
+    followers: UsersModel[];
+
+    // People who are following me
+    @ManyToMany(() => UsersModel, (user) => user.followers)
+    followees: UsersModel[];
 }
