@@ -88,9 +88,9 @@ export class UsersModel extends BaseModel {
 
     // People I am following
     @OneToMany(() => UserFollowersModel, (userFollowModel) => userFollowModel.follower)
-    followers: UsersModel[]
+    followers: UserFollowersModel[]
 
     // People who are following me
     @OneToMany(() => UserFollowersModel, (userFollowModel) => userFollowModel.followee)
-    followees: UsersModel[];
+    followees: UserFollowersModel[];
 }

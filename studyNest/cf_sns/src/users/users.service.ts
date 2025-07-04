@@ -2,12 +2,15 @@ import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {UsersModel} from "./entity/users.entity";
 import {Repository} from "typeorm";
+import {UserFollowersModel} from "./entity/user-followers.entity";
 
 @Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(UsersModel)
         private readonly usersRepository: Repository<UsersModel>,
+        @InjectRepository(UserFollowersModel)
+        private readonly userFollowersRepository: Repository<UserFollowersModel>,
     ) {
     }
 
@@ -50,42 +53,33 @@ export class UsersService {
     }
 
     async followUser(followerId: number, followeeId: number) {
-        const user = await this.usersRepository.findOne({
-            where: {
+        const result = await this.userFollowersRepository.save({
+            follower: {
                 id: followerId,
             },
-            relations: {
-                followees: true,
-            },
-        });
-
-        if (!user) {
-            throw new BadRequestException(`follower ${followerId} not found}`);
-        }
-
-        await this.usersRepository.save({
-            ...user,
-            followees: [
-                ...user.followees,
-                {id: followeeId}
-            ]
-        })
-    }
-    
-    async getFollowers(userId: number) : Promise<UsersModel[]>{
-        const user = await this.usersRepository.findOne({
-            where: {
-                id: userId,
-            },
-            relations: {
-                followers: true,
+            followee: {
+                id: followeeId,
             }
         });
-        
-        if (!user) {
+
+        return true;
+    }
+
+    async getFollowers(userId: number): Promise<UsersModel[]> {
+        const result = await this.userFollowersRepository.find({
+            where: {
+                followee: {id: userId},
+            },
+            relations: {
+                follower: true,
+                followee: true,
+            }
+        })
+
+        if (!result) {
             throw new BadRequestException(`follower ${userId} not found}`);
         }
 
-        return user.followers;
+        return result.map((x) => x.follower);
     }
 }
