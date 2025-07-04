@@ -1,11 +1,11 @@
 import {
     Body,
     ClassSerializerInterceptor,
-    Controller,
+    Controller, DefaultValuePipe,
     Get,
-    Param,
-    ParseIntPipe,
-    Post,
+    Param, ParseBoolPipe,
+    ParseIntPipe, Patch,
+    Post, Query,
     UseInterceptors
 } from '@nestjs/common';
 import {UsersService} from './users.service';
@@ -54,7 +54,18 @@ export class UsersController {
     @Get('follow/me')
     async getFollow(
         @User() user: UsersModel,
+        @Query('includedNotConfirmed', new DefaultValuePipe(false), ParseBoolPipe) includedNotConfirmed: boolean,
     ) {
-        return this.usersService.getFollowers(user.id);
+        return this.usersService.getFollowers(user.id, includedNotConfirmed);
+    }
+
+    @Patch('follow/:id/confirm')
+    async patchFollowConfirm(
+        @User() user: UsersModel,
+        @Param('id', ParseIntPipe) followerId: number,
+    ) {
+        await this.usersService.confirmFollow(followerId, user.id);
+        
+        return true;
     }
 }
