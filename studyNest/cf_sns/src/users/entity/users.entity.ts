@@ -18,6 +18,7 @@ import {Exclude, Expose} from "class-transformer";
 import {ChatsModel} from "../../chats/entity/chats.entity";
 import {MessagesModel} from "../../chats/messages/entity/messages.entity";
 import {CommentsModel} from "../../posts/comments/entity/comments.entity";
+import {UserFollowersModel} from "./user-followers.entity";
 
 @Entity()
 // @Exclude()  // class가 보안에 중요하다면 클래스 전체에 exclude 를 할수 있다(기본적으로 전체 expose). 필요한 항목에 대해서만 expose 데코레이터를 사용하면 된다.
@@ -86,16 +87,10 @@ export class UsersModel extends BaseModel {
     postComments: CommentsModel[]
 
     // People I am following
-    @ManyToMany(() => UsersModel, (user) => user.followees)
-    // @JoinTable({
-    //     name: 'user_followers', // 테이블 이름 변경
-    //     joinColumn: { name: 'followerId', referencedColumnName: 'id' }, // 현재 엔티티(UsersModel)의 ID를 참조하는 컬럼 이름
-    //     inverseJoinColumn: { name: 'followeeId', referencedColumnName: 'id' }, // 대상 엔티티(UsersModel)의 ID를 참조하는 컬럼 이름
-    // })
-    @JoinTable()
-    followers: UsersModel[];
+    @OneToMany(() => UserFollowersModel, (userFollowModel) => userFollowModel.follower)
+    followers: UsersModel[]
 
     // People who are following me
-    @ManyToMany(() => UsersModel, (user) => user.followers)
+    @OneToMany(() => UserFollowersModel, (userFollowModel) => userFollowModel.followee)
     followees: UsersModel[];
 }
