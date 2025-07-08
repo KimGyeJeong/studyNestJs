@@ -1,7 +1,7 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {UsersModel} from "./entity/users.entity";
-import {Repository} from "typeorm";
+import {QueryRunner, Repository} from "typeorm";
 import {UserFollowersModel} from "./entity/user-followers.entity";
 
 @Injectable()
@@ -12,6 +12,14 @@ export class UsersService {
         @InjectRepository(UserFollowersModel)
         private readonly userFollowersRepository: Repository<UserFollowersModel>,
     ) {
+    }
+
+    getUsersRepository(qr?: QueryRunner) {
+        return qr ? qr.manager.getRepository<UsersModel>(UsersModel) : this.usersRepository;
+    }
+
+    getUserFollowRepository(qr?: QueryRunner) {
+        return qr ? qr.manager.getRepository<UserFollowersModel>(UserFollowersModel) : this.userFollowersRepository;
     }
 
     async createUser(user: Pick<UsersModel, 'email' | 'nickname' | 'password'>) {
@@ -52,8 +60,11 @@ export class UsersService {
         });
     }
 
-    async followUser(followerId: number, followeeId: number) {
-        const result = await this.userFollowersRepository.save({
+    async followUser(followerId: number, followeeId: number, qr?: QueryRunner) {
+
+        const userFollowersRepository = this.getUserFollowRepository(qr);
+
+        await userFollowersRepository.save({
             follower: {
                 id: followerId,
             },
@@ -66,17 +77,17 @@ export class UsersService {
     }
 
     async getFollowers(userId: number, includedNotConfirmed: boolean) {
-        
+
         const where = {
             followee: {
                 id: userId,
             },
         };
-        
-        if (!includedNotConfirmed){
+
+        if (!includedNotConfirmed) {
             where['isConfirmed'] = true;
         }
-        
+
         const result = await this.userFollowersRepository.find({
             where,
             relations: {
@@ -91,39 +102,61 @@ export class UsersService {
 
         return result.map((x) => ({
             id: x.follower.id,
-            nickname : x.follower.nickname,
-            email : x.follower.email,
-            isConfirmed : x.isConfirmed
+            nickname: x.follower.nickname,
+            email: x.follower.email,
+            isConfirmed: x.isConfirmed
         }));
     }
 
-    async confirmFollow(followerId: number, followeeId: number) {
-        const existing = await this.userFollowersRepository.findOne({
+    async confirmFollow(followerId: number, followeeId: number, qr?: QueryRunner) {
+
+        const userFollowersRepository = this.getUserFollowRepository(qr);
+
+        const existing = await userFollowersRepository.findOne({
             where: {
                 follower: {id: followerId},
                 followee: {id: followeeId},
             },
-            relations : {follower : true, followee : true}
+            relations: {follower: true, followee: true}
         });
-        
+
         if (!existing) {
             throw new BadRequestException(`none exist follow request`);
         }
-        
-        await this.userFollowersRepository.save({
+
+        await userFollowersRepository.save({
             ...existing,
-            isConfirmed : true,
+            isConfirmed: true,
         });
-        
+
         return true;
     }
-    
-    async deleteFollow(followerId: number, followeeId: number){
-        await this.userFollowersRepository.delete({
-            follower : {id : followerId},
-            followee : {id: followeeId}
+
+    async deleteFollow(followerId: number, followeeId: number, qr?: QueryRunner) {
+
+        const userFollowersRepository = this.getUserFollowRepository(qr);
+
+        await userFollowersRepository.delete({
+            follower: {id: followerId},
+            followee: {id: followeeId}
         });
-        
+
         return true;
+    }
+
+    async incrementFollowerCount(userId: number, qr?: QueryRunner) {
+        const userRepository = this.getUsersRepository(qr);
+
+        await userRepository.increment({
+            id: userId,
+        }, 'followerCount', 1);
+    }
+
+    async decrementFollowerCount(userId: number, qr?: QueryRunner) {
+        const userRepository = this.getUsersRepository(qr);
+
+        await userRepository.decrement({
+            id: userId,
+        }, 'followerCount', 1);
     }
 }

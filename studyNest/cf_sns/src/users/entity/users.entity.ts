@@ -93,4 +93,10 @@ export class UsersModel extends BaseModel {
     // People who are following me
     @OneToMany(() => UserFollowersModel, (userFollowModel) => userFollowModel.followee)
     followees: UserFollowersModel[];
+
+    @Column({default: 0})
+    followerCount: number;
+
+    @Column({default: 0})
+    followeeCount: number;
 }
