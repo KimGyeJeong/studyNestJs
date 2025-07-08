@@ -3,7 +3,7 @@ import {CommonService} from "../../common/common.service";
 import {PaginateCommentsDto} from "./dto/paginate-comments.dto";
 import {InjectRepository} from "@nestjs/typeorm";
 import {CommentsModel} from "./entity/comments.entity";
-import {Repository} from "typeorm";
+import {QueryRunner, Repository} from "typeorm";
 import {CreateCommentsDto} from "./dto/create-comments.dto";
 import {UsersModel} from "../../users/entity/users.entity";
 import {DEFAULT_POST_FIND_OPTIONS} from "./const/default-comment-find-options.const";
@@ -16,6 +16,10 @@ export class CommentsService {
         private readonly commentsRepository: Repository<CommentsModel>,
         private readonly commonService: CommonService,
     ) {
+    }
+
+    getRepository(qr?: QueryRunner) {
+        return qr ? qr.manager.getRepository<CommentsModel>(CommentsModel) : this.commentsRepository;
     }
 
     paginateComments(
@@ -43,8 +47,11 @@ export class CommentsService {
         return comment;
     }
 
-    async createComment(dto: CreateCommentsDto, postId: number, author: UsersModel,) {
-        return this.commentsRepository.save({
+    async createComment(dto: CreateCommentsDto, postId: number, author: UsersModel, qr?: QueryRunner) {
+
+        const commentsRepository = this.getRepository(qr);
+
+        return commentsRepository.save({
             ...dto,
             post: {
                 id: postId,
@@ -68,9 +75,11 @@ export class CommentsService {
         );
     }
 
-    async deleteComment(id: number) {
+    async deleteComment(id: number, qr?: QueryRunner) {
 
-        const comment = await this.commentsRepository.findOne({
+        const commentsRepository = this.getRepository(qr);
+
+        const comment = await commentsRepository.findOne({
             where: {id}
         });
 
@@ -78,7 +87,7 @@ export class CommentsService {
             throw new BadRequestException(`id: comment ${id} not found`);
         }
 
-        await this.commentsRepository.delete({
+        await commentsRepository.delete({
             id
         });
 
